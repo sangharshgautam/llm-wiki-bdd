@@ -1,0 +1,188 @@
+openapi: 3.0.3
+info:
+  title: FleetRoute AI Optimization API
+  description: >-
+    Advanced route optimization engine for commercial fleets. Generates efficient multi-stop 
+    dispatch schedules while considering vehicle capacities, time windows, and driver break laws.
+  version: 2.1.0
+servers:
+  - url: https://api.fleetroute-ai.com/v2
+    description: Production Environment
+  - url: https://staging-api.fleetroute-ai.com/v2
+    description: Staging Environment
+paths:
+  /routes/optimize:
+    post:
+      summary: Optimize dispatch routing for a fleet
+      description: Computes the most efficient stop sequence and turn-by-turn metrics for a set of shipments using a specific vehicle profile.
+      operationId: optimizeRoute
+      requestBody:
+        description: Fleet profiles, constraint parameters, and stop locations to optimize.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - vehicleProfile
+                - origin
+                - stops
+              properties:
+                vehicleProfile:
+                  type: object
+                  required:
+                    - type
+                    - maxCapacityKg
+                  properties:
+                    type:
+                      type: string
+                      enum: [box_truck, semi_trailer, electric_van, drone]
+                      example: "semi_trailer"
+                    maxCapacityKg:
+                      type: integer
+                      format: int64
+                      example: 18000
+                    hazmatCertified:
+                      type: boolean
+                      default: false
+                origin:
+                  type: object
+                  required:
+                    - latitude
+                    - longitude
+                  properties:
+                    latitude:
+                      type: number
+                      format: float
+                      example: 37.7749
+                    longitude:
+                      type: number
+                      format: float
+                      example: -122.4194
+                    depotName:
+                      type: string
+                      example: "SF Hub Warehouse A"
+                stops:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                      - stopId
+                      - latitude
+                      - longitude
+                      - weightKg
+                    properties:
+                      stopId:
+                        type: string
+                        format: uuid
+                        example: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+                      latitude:
+                        type: number
+                        format: float
+                        example: 37.8044
+                      longitude:
+                        type: number
+                        format: float
+                        example: -122.2711
+                      weightKg:
+                        type: integer
+                        example: 450
+                      timeWindow:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                            format: date-time
+                            example: "2026-06-28T09:00:00Z"
+                          end:
+                            type: string
+                            format: date-time
+                            example: "2026-06-28T13:00:00Z"
+                optimizationStrategy:
+                  type: string
+                  enum: [shortest_time, shortest_distance, lowest_carbon]
+                  default: "shortest_time"
+      responses:
+        '200':
+          description: Optimization successful. Returns structured route manifests and KPIs.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  optimizationId:
+                    type: string
+                    format: uuid
+                    example: "c3b0fa14-8c22-4e11-9e7b-1188bb3e8cc1"
+                  summary:
+                    type: object
+                    properties:
+                      totalDurationMinutes:
+                        type: number
+                        format: float
+                        example: 245.5
+                      totalDistanceKm:
+                        type: number
+                        format: float
+                        example: 184.2
+                      estimatedCarbonSavedKg:
+                        type: number
+                        format: float
+                        example: 14.8
+                  itinerary:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sequenceOrder:
+                          type: integer
+                          example: 1
+                        stopId:
+                          type: string
+                          format: uuid
+                          example: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+                        estimatedArrival:
+                          type: string
+                          format: date-time
+                          example: "2026-06-28T10:15:00Z"
+                        etaStatus:
+                          type: string
+                          enum: [on_time, risk_of_delay, tight_window]
+                          example: "on_time"
+                        distanceFromPreviousKm:
+                          type: number
+                          format: float
+                          example: 12.4
+        '400':
+          description: Bad Request. The server could not understand the request due to invalid syntax or geometry conflicts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode:
+                    type: string
+                    example: "UNREACHABLE_STOPS"
+                  message:
+                    type: string
+                    example: "One or more stop coordinates are geographically isolated from valid road networks."
+                  invalidStops:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    example: ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
+        '500':
+          description: Internal Optimization Engine Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  traceId:
+                    type: string
+                    example: "err-99213-abc"
+                  message:
+                    type: string
+                    example: "The spatial solver timed out while computing matrices."
