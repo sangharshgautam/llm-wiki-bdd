@@ -87,7 +87,7 @@ The LLM will:
 ## Project Structure
 
 ```
-my-llm-wiki/
+llm-wiki-bdd/
 ├── AGENTS.md                    # Schema — tells the LLM how to maintain the wiki
 ├── SOURCES.md                   # External path references to your projects (optional)
 │
@@ -150,7 +150,7 @@ them anywhere.
 Copy only these two things:
 
 ```
-my-llm-wiki/
+llm-wiki-bdd/
 ├── AGENTS.md       # The schema — defines workflows and rules
 └── wiki/           # All ingested knowledge (step dict, patterns, APIs, index, log)
 ```
