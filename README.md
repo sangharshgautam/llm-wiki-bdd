@@ -13,73 +13,41 @@ The wiki compounds: every project you ingest makes future generations better.
 
 ## How It Works
 
-```
-                                   ┌─────────────────────────────────────────────────────┐
-                                   │                     INGEST PHASE                     │
-                                   │  (run once per source; wiki compounds over time)     │
-                                   └─────────────────────────────────────────────────────┘
-                                                  │
-                    ┌─────────────────────────────┼─────────────────────────────┐
-                    │                             │                             │
-                    ▼                             ▼                             ▼
-    ┌───────────────────────────┐   ┌──────────────────────────────┐   ┌──────────────────┐
-    │  Step Definition Source   │   │  Golden Service Projects     │   │  New Specs        │
-    │  (Java @Given/@When/@Then)│   │  (feature files, config,     │   │  (frontend_spec,  │
-    │  e.g. openapi-bdd         │   │   lifecycle, payloads)       │   │   backend_spec)   │
-    └───────────┬───────────────┘   └──────────────┬───────────────┘   └────────┬─────────┘
-                │                                  │                            │
-                │ parse annotations                │ extract patterns           │ read fresh on
-                │                                  │                            │ each generate
-                ▼                                  ▼                            ▼
-    ┌───────────────────────────┐   ┌──────────────────────────────┐   ┌──────────────────┐
-    │  wiki/step_dictionary/    │   │  wiki/qa_patterns/           │   │  frontend spec   │
-    │  ┌─────────────────────┐  │   │  ┌────────────────────────┐  │   │  backend spec    │
-    │  │ http_method_steps   │  │   │  │ project_structure      │  │   │                  │
-    │  │ request_payload_    │  │   │  │ scenario_patterns      │  │   │  Parse schemas,  │
-    │  │   steps             │  │   │  │ error_testing          │  │   │  endpoints,      │
-    │  │ parameter_steps     │  │   │  │ payload_management     │  │   │  responses       │
-    │  │ authentication_     │  │   │  │ lifecycle_setup        │  │   │                  │
-    │  │   steps             │  │   │  └────────────────────────┘  │   └────────┬─────────┘
-    │  │ response_assertion_ │  │   └──────────────┬───────────────┘            │
-    │  │   steps             │  │                  │                            │
-    │  │ context_variable_   │  │                  │                            │
-    │  │   steps             │  │                  ▼                            ▼
-    │  │ helper_steps        │  │   ┌──────────────────────────────────────────────────────┐
-    │  └─────────────────────┘  │   │                  GENERATE PHASE                       │
-    │  (exact step expressions) │   │                                                       │
-    └───────────┬───────────────┘   │  1. Reason about scenarios (Happy/Negative/Business)  │
-                │                  │  2. Map each scenario to available steps from wiki     │
-                │                  │  3. Generate payloads & mocks per scenario tag         │
-                ▼                  │                                                       │
-    ┌───────────────────────────┐   │                    ┌────────────────────┐              │
-    │  Verify: every Gherkin    │   │                    │  For each scenario │              │
-    │  step exists verbatim in  │   │                    │  (H001, N001,      │              │
-    │  wiki/step_dictionary/    │   │                    │   B001, ...):      │              │
-    └───────────────────────────┘   │                    │                    │              │
-                                    │                    │  1. requestPayload │              │
-                                    │                    │     /<TAG>.json    │              │
-                                    │                    │  2. responsePayload│              │
-                                    │                    │     /<TAG>.json    │              │
-                                    │                    │  3. mocks/<TAG>.json              │
-                                    │                    └────────────────────┘              │
-                                    └──────────────────────────┬───────────────────────────┘
-                                                               ▼
-                                    ┌──────────────────────────────────────────────────────┐
-                                    │              GENERATED OUTPUT                         │
-                                    │  ┌─────────────────────────────────────────────┐     │
-                                    │  │ journey-<api-name>-service-test/            │     │
-                                    │  │ ├── pom.xml                                │     │
-                                    │  │ ├── scenarios.md   (tabular doc)           │     │
-                                    │  │ └── src/test/resources/                    │     │
-                                    │  │     ├── features/                          │     │
-                                    │  │     │   ├── happyPath.feature  (@H001,…)   │     │
-                                    │  │     │   ├── negativePath.feature(@N001,…)  │     │
-                                    │  │     │   └── businessScenarios.feature(@B…) │     │
-                                    │  │     ├── requestPayload/ (H001.json, …)     │     │
-                                    │  │     ├── responsePayload/(H001.json, …)     │     │
-                                    │  │     └── mocks/        (H001.json, …)       │     │
-                                    │  └─────────────────────────────────────────────┘     │
-                                    └──────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph INGEST["Ingest Phase<br/>(run once; wiki compounds over time)"]
+        direction TB
+        A1["Step Definition Source<br/>(Java @Given/@When/@Then)"] -->|parse annotations| A2["wiki/step_dictionary/<br/>(catalog of available step expressions)"]
+        B1["Golden Service Projects<br/>(feature files, config, lifecycle, payloads)"] -->|extract patterns| B2["wiki/qa_patterns/<br/>(scenario structure, error patterns,<br/>payload conventions, lifecycle setup)"]
+    end
+
+    subgraph GENERATE["Generate Phase"]
+        direction TB
+        C1["frontend_spec<br/>backend_spec"] -->|read fresh| C2["Parse schemas,<br/>endpoints, responses"]
+        C2 --> C3["Reason about scenarios<br/>(Happy / Negative / Business)"]
+        A2 --> C3
+        B2 --> C3
+        C3 --> C4["Map each scenario to<br/>available steps from wiki"]
+        C3 --> C5["Generate per scenario tag"]
+        C5 --> C6["requestPayload/&lt;TAG&gt;.json"]
+        C5 --> C7["responsePayload/&lt;TAG&gt;.json"]
+        C5 --> C8["mocks/&lt;TAG&gt;.json"]
+        C4 --> C9["Verify every Gherkin step<br/>exists verbatim in wiki"]
+        C9 --> C10["Write generated project"]
+    end
+
+    subgraph OUTPUT["Generated Output"]
+        direction TB
+        O1["journey-&lt;api-name&gt;-service-test/"]
+        O1 --> O2["pom.xml"]
+        O1 --> O3["scenarios.md (tabular doc)"]
+        O1 --> O4["src/test/resources/features/<br/>happyPath.feature (@H001,…)<br/>negativePath.feature (@N001,…)<br/>businessScenarios.feature (@B001,…)"]
+        O1 --> O5["src/test/resources/requestPayload/<br/>(H001.json, N001.json, B001.json, …)"]
+        O1 --> O6["src/test/resources/responsePayload/<br/>(H001.json, N001.json, B001.json, …)"]
+        O1 --> O7["src/test/resources/mocks/<br/>(H001.json, N002.json, …)"]
+    end
+
+    C10 --> OUTPUT
 ```
 
 ## Getting Started
