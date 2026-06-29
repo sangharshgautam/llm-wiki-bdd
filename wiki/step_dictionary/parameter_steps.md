@@ -21,7 +21,7 @@ And sg: I have the following query parameters:
 **Description:** Replaces path parameter placeholders in the URL. For a URL like `/users/{id}`, it replaces `{id}` with the provided value. Accepts a Cucumber DataTable with key-value pairs.
 **Usage:**
 ```gherkin
-Given sg: I have a REST API endpoint at "http://coffee-api/api/orders/{orderId}"
+Given sg: I have a REST API endpoint at "http://<host>/api/orders/{orderId}"
 And sg: I have the following path parameters:
   | orderId | a8b3c4d5-e6f7-8a9b-0c1d-2e3f4a5b6c7d |
 ```

@@ -9,7 +9,6 @@ The test project uses a dedicated `AppSetup` class with Cucumber's `@BeforeAll`/
 ```java
 package com.example.coffee.steps;
 
-import com.example.api.steps.ApiStepDefinitions;
 import com.example.coffee.CoffeeOrderingApplication;
 import io.cucumber.java.AfterAll;
 import io.cucumber.java.BeforeAll;
@@ -25,9 +24,6 @@ public class AppSetup {
         context = new SpringApplicationBuilder(CoffeeOrderingApplication.class)
                 .properties("server.port=0")
                 .run();
-        int port = Integer.parseInt(context.getEnvironment().getProperty("local.server.port"));
-        ApiStepDefinitions.setTargetPort(port);
-        ApiStepDefinitions.setBaseHost("coffee-api");
     }
 
     @AfterAll
@@ -42,10 +38,7 @@ public class AppSetup {
 ## Key Mechanics
 
 1. **Random port**: `server.port=0` lets Spring Boot pick an available port
-2. **Port propagation**: The actual port is passed to `ApiStepDefinitions.setTargetPort()`
-3. **Host rewriting**: `ApiStepDefinitions.setBaseHost("coffee-api")` enables URL rewriting
-   - When a feature file uses `http://coffee-api/api/orders`, the step definition rewrites it to `http://localhost:<dynamic-port>/api/orders`
-4. **Cleanup**: `@AfterAll` gracefully closes the application context
+2. **Cleanup**: `@AfterAll` gracefully closes the application context
 
 ## Mock Considerations
 

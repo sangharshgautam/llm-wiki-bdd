@@ -5,7 +5,6 @@
 - **Title:** Express Coffee Ordering API
 - **Version:** 1.0.0
 - **Base URL:** `https://api.expresscoffee.mock`
-- **Test host placeholder:** `coffee-api`
 - **Architecture:** Single Camel REST service (no separate backend mock needed — service starts in-process)
 
 ## Endpoints

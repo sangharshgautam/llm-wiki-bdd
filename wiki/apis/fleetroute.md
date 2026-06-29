@@ -5,7 +5,6 @@
 - **Title:** FleetRoute AI Optimization API
 - **Version:** 2.1.0
 - **Base URL:** `https://api.fleetroute-ai.com/v2`
-- **Test host placeholder:** `fleetroute-api`
 
 ## Endpoints
 

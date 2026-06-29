@@ -29,7 +29,7 @@ And sg: I set basic authentication with username "admin" and password "password1
 **Description:** Sets the REST Assured `baseURI` for subsequent requests.
 **Usage:**
 ```gherkin
-And sg: I set the base URI to "http://coffee-api"
+And sg: I set the base URI to "http://<host>/api"
 ```
 
 ## Base Path

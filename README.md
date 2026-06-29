@@ -312,7 +312,6 @@ or the paths in SOURCES.md. Flag any discrepancies.
 ## Rules
 
 - All generated steps use the `sg:` prefix
-- Host placeholder convention: `<api-name>-api` (e.g., `coffee-api`, `fleetroute-api`)
 - The LLM never modifies `raw_sources/`
 - The LLM generates test projects directly without requiring approval
 - If a needed step isn't in the wiki, the LLM flags it as a gap (never hallucinates)

@@ -67,7 +67,6 @@ Each step page must document:
 - The exact step expression (e.g. `sg: I send a POST request`)
 - The method/function signature
 - What the step does in plain language
-- Concrete examples from golden feature files (quote the exact Gherkin)
 
 ### 2. Ingest Golden Features
 
@@ -98,7 +97,7 @@ Update `wiki/qa_patterns/`:
 
 When the user asks to generate tests (after ingest is complete), do NOT re-ingest or re-read source files. Use only what is already in the wiki:
 
-1. **Read both target specs**: Parse the frontend OpenAPI spec and backend OpenAPI spec from their `SOURCES.md` paths (`frontend_spec` and `backend_spec`). These are the new specs under test and must be read fresh. Extract `<api-name>` from the frontend spec's `info.x-integration-catalogue.publisher-reference` — this value determines the project directory name, host placeholder, and wiki page name. Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
+1. **Read both target specs**: Parse the frontend OpenAPI spec and backend OpenAPI spec from their `SOURCES.md` paths (`frontend_spec` and `backend_spec`). These are the new specs under test and must be read fresh. Extract `<api-name>` from the frontend spec's `info.x-integration-catalogue.publisher-reference` — this value determines the project directory name and wiki page name. Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
 
 2. **Read golden examples from wiki**: Read `wiki/qa_patterns/` and `wiki/apis/` for scenario patterns, testing conventions, and example API docs. Do NOT re-read golden service source files — the wiki already contains the extracted knowledge.
 
@@ -109,7 +108,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
    - **Negative path** — frontend validation rejects (4xx), backend returns error (4xx/5xx), or transforms fail.
    - **Business scenarios** — valid-by-schema requests that violate business rules (e.g., duplicate ID, out-of-range values, conflicting state).
 
-5. **Map endpoints to steps**: For each scenario, map the required actions (request setup, assertions, mocks, etc.) to steps from the compiled dictionary only. Do NOT write any step that is not in the list. If no existing step covers a required action, flag it as a **gap** — do not invent a new step expression.
+5. **Map endpoints to steps**: For each scenario, map the required actions (request setup, assertions, mocks, etc.) to steps from the compiled dictionary only. Use the **step expression** (e.g., `sg: I send a POST request`) — do NOT copy example data or placeholder URLs from the dictionary pages. Generate fresh URIs, field names, and payloads from the target spec's schemas. Do NOT write any step that is not in the list. If no existing step covers a required action, flag it as a **gap** — do not invent a new step expression.
 
 6. **Consult QA patterns**: Follow conventions from `wiki/qa_patterns/` for scenario structure, payload management, lifecycle setup, and error testing.
 
@@ -166,7 +165,6 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     - Every Gherkin step line exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix
     - Every payload file referenced in feature files exists in `requestPayload/` or `responsePayload/`
     - Every mock file referenced exists in `mocks/`
-    - Host placeholder is consistent across all files
     - The scenario count provides reasonable coverage
 
 11. Write all files to `<current-working-dir>/journey-<api-name>-service-test/`
@@ -227,7 +225,6 @@ Scan `wiki/` for:
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/` (e.g., `sg:`)
 - Generated project directory name: STRICTLY `journey-<lowercase-kebab-of-publisher-reference>-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `journey-fleetroute-service-test`, if it's "coffee ordering api" → `journey-coffee-ordering-service-test`
 - **Overwrite existing files**: If the target directory `<current-working-dir>/journey-<api-name>-service-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
-- Host placeholder convention: derive from the API name (e.g., `<api-name>-api`)
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
   - `project_structure.md` — directory layout, config files, build tool
   - `lifecycle_setup.md` — how the app under test is started/stopped, host/port rewriting
@@ -249,11 +246,10 @@ Scan `wiki/` for:
 
 Before writing files, verify:
 1. Every Gherkin step in the feature file exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix (e.g., `sg:`)
-2. Host placeholder is consistent across all generated files
-3. Payload file references match actual files in the generated structure
-4. All generated config files follow the patterns in `wiki/qa_patterns/`
-5. The scenario count provides reasonable coverage (happy path + all error codes + business scenarios)
-6. For each scenario tag (H/N/B), the corresponding `requestPayload/<TAG>.json`, `responsePayload/<TAG>.json`, and `mocks/<TAG>.json` (where applicable) all exist and are referenced correctly in feature files
-7. `scenarios.md` is present at the project root with all scenarios documented in tabular form
-8. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
-9. Output location: `<current-working-dir>/journey-<api-name>-service-test/`
+2. Payload file references match actual files in the generated structure
+3. All generated config files follow the patterns in `wiki/qa_patterns/`
+4. The scenario count provides reasonable coverage (happy path + all error codes + business scenarios)
+5. For each scenario tag (H/N/B), the corresponding `requestPayload/<TAG>.json`, `responsePayload/<TAG>.json`, and `mocks/<TAG>.json` (where applicable) all exist and are referenced correctly in feature files
+6. `scenarios.md` is present at the project root with all scenarios documented in tabular form
+7. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
+8. Output location: `<current-working-dir>/journey-<api-name>-service-test/`
