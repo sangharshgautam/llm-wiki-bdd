@@ -47,8 +47,8 @@ When `SOURCES.md` exists, the LLM reads external paths from it instead of
 requiring files inside `raw_sources/`. You can mix both approaches.
 
 For `step_definitions` paths that point to a directory (not a file), the LLM
-must recursively search for all files containing step definition markers
-(`@Given`, `@When`, `@Then`, `@And`) and process all of them.
+must recursively search that directory for all files containing step definition markers
+(`@Given`, `@When`, `@Then`, `@And`) — do not search outside the given path.
 
 ### 1. Ingest Step Definitions
 
@@ -74,7 +74,7 @@ Read `raw_sources/golden_services/<project>/` or paths from `SOURCES.md`. Each p
 - `public/openapi.yaml` — the OpenAPI spec for the service
 - `*-test/` — test subdirectories with feature files and config
 
-For each found test subdirectory, discover the project structure automatically — look for:
+For each path, list only its immediate subdirectories matching `*-test/` — do not search parent directories or the project root. For each found test subdirectory, discover the project structure automatically — look for:
 - Feature files (`.feature`) — scenario structure, step sequencing, assertion style
 - Test runner configuration
 - Lifecycle setup (app startup/shutdown, host/port rewriting)
