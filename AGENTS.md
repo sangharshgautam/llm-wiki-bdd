@@ -110,8 +110,9 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
      - `negativePath.feature` — all 4xx/5xx error scenarios, each tagged `@N001`, `@N002`, …
      - `businessScenarios.feature` — business rule violations, validation failures, each tagged `@B001`, `@B002`, …
    - Config files (`junit-platform.properties`) go under `src/test/resources/`
-   - `requestPayload/`, `responsePayload/` go under `src/test/resources/`
-   - Mock files (`mocks/`, `mappings/`, `__files/`) go under `src/test/resources/`
+   - `requestPayload/` — request body JSON files named by scenario tag (e.g., `H001.json`)
+   - `responsePayload/` — expected response JSON files named by scenario tag (e.g., `H001.json`)
+   - `mocks/` — mock/stub JSON files named by scenario tag (e.g., `H001.json`)
    - Build file (`pom.xml`) goes at the project root
 8. Before finalizing, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
 9. Write all files to `<service-dir>/<api-name>-test/`
