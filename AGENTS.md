@@ -104,7 +104,13 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
 4. If no existing step covers a required action (e.g., setting a specific header, asserting a nested field), flag it as a **gap** — do not invent a new step expression
 5. Read the OpenAPI specs from each golden service's `public/openapi.yaml` and cross-reference how their endpoints map to test scenarios in corresponding `*-test/` feature files — use these as examples for mapping the new spec
 6. Consult `wiki/qa_patterns/` to match the team's testing conventions
-7. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`. Include the same supporting file directories as the golden services (e.g., `requestPayload/`, `responsePayload/`, `mocks/`, `__files/`) with payload and mock JSON files matching the new API's request/response schemas
+7. Draft the generated project at `generated/<api-name>-service-test/` mirroring the exact directory tree from `wiki/qa_patterns/project_structure.md`:
+   - Java files (`CucumberTest.java`, lifecycle setup) go under `src/test/java/<package>/`
+   - Feature files go under `src/test/resources/features/`
+   - Config files (`junit-platform.properties`) go under `src/test/resources/`
+   - `requestPayload/`, `responsePayload/` go under `src/test/resources/`
+   - Mock files (`mocks/`, `mappings/`, `__files/`) go under `src/test/resources/`
+   - Build file (`pom.xml`) goes at the project root
 8. Before presenting, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
 9. PRESENT the full output to the user for review, including a list of any gaps found
 10. Only write to `generated/` after user approval
