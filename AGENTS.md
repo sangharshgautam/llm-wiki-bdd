@@ -93,11 +93,14 @@ Update `wiki/qa_patterns/`:
 When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks to generate tests:
 
 1. Read the OpenAPI spec (parse YAML for endpoints, operations, schemas, responses)
-2. Consult `wiki/step_dictionary/` to map each endpoint+HTTP method to available steps
-3. Consult `wiki/qa_patterns/` to match the team's testing conventions
-4. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`
-5. PRESENT the full output to the user for review
-6. Only write to `generated/` after user approval
+2. Read ALL pages in `wiki/step_dictionary/` and compile a complete list of every available step expression
+3. For each endpoint+HTTP method, map it to steps from that list only. Do NOT write any step that is not in the list
+4. If no existing step covers a required action (e.g., setting a specific header, asserting a nested field), flag it as a **gap** — do not invent a new step expression
+5. Consult `wiki/qa_patterns/` to match the team's testing conventions
+6. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`
+7. Before presenting, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
+8. PRESENT the full output to the user for review, including a list of any gaps found
+9. Only write to `generated/` after user approval
 
 #### Coverage expectations per endpoint:
 - **Happy path** (2xx) with field-level assertions on key response fields
@@ -174,8 +177,9 @@ Scan `wiki/` for:
 ## Validation Before Presenting to User
 
 Before showing generated output to the user, verify:
-1. Every Gherkin step in the feature file exists in `wiki/step_dictionary/`
+1. Every Gherkin step in the feature file exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix (e.g., `sg:`)
 2. Host placeholder is consistent across all generated files
 3. Payload file references match actual files in the generated structure
 4. All generated config files follow the patterns in `wiki/qa_patterns/`
 5. The scenario count provides reasonable coverage (happy path + all error codes)
+6. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
