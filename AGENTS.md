@@ -177,29 +177,20 @@ Scan `wiki/` for:
 
 - ALL step references in generated feature files MUST use the `sg:` prefix
 - Host placeholder convention: `<api-short-name>-api` (e.g. `coffee-api`, `fleetroute-api`)
-- The generated `AppSetup.java` must call:
-  - `ApiStepDefinitions.setBaseHost("<placeholder-host>")`
-  - `ApiStepDefinitions.setTargetPort(<dynamic-port-from-spring-boot>)`
-- The generated `CucumberTest.java` must use `@IncludeEngines("cucumber")` and `@SelectClasspathResource("features")`
-- The generated `junit-platform.properties` must include both glue packages:
-  - `com.example.api.steps` (from openapi-bdd)
-  - `<project>.steps` (for AppSetup)
-- The generated `pom.xml` must include:
-  - `com.example:openapi-bdd:1.0-SNAPSHOT` (test scope) for step definitions
-  - `io.cucumber:cucumber-java` (test scope)
-  - `io.cucumber:cucumber-junit-platform-engine` (test scope)
-  - `org.junit.platform:junit-platform-suite` (test scope)
-  - The service artifact under test
+- The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
+  - `project_structure.md` — directory layout, config files, build tool
+  - `lifecycle_setup.md` — how the app under test is started/stopped, host/port rewriting
+  - `payload_management.md` — inline JSON vs file-based payloads
 - For each POST/PUT endpoint with a request body schema, generate a request payload JSON file
 - For each non-trivial response schema, generate a response payload JSON file for file-based assertions
 - NEVER hallucinate step definitions. If a needed step is not in `wiki/step_dictionary/`, flag it as a gap.
-- Use inline JSON bodies (triple-quoted strings in Gherkin) for simple requests, file references for complex ones
+- If the lifecycle or config patterns from `wiki/qa_patterns/` don't apply to this project, flag the gap
 
 ## Validation Before Presenting to User
 
 Before showing generated output to the user, verify:
 1. Every Gherkin step in the feature file exists in `wiki/step_dictionary/`
-2. Host placeholder is consistent across feature file, AppSetup, and any config
+2. Host placeholder is consistent across all generated files
 3. Payload file references (e.g. `"createOrder"`) match actual files in the generated structure
-4. `pom.xml` correctly references `openapi-bdd` and the service under test
+4. All generated config files follow the patterns in `wiki/qa_patterns/`
 5. The scenario count provides reasonable coverage (happy path + all error codes)
