@@ -105,13 +105,7 @@ llm-wiki-bdd/
 │
 └── generated/                   # Generated test output (written after your approval)
     └── <api-name>-service-test/
-        ├── features/
-        ├── CucumberTest.java
-        ├── AppSetup.java
-        ├── junit-platform.properties
-        ├── pom.xml
-        ├── requestPayload/
-        └── responsePayload/
+        └── (structure follows wiki/qa_patterns/project_structure.md)
 ```
 
 ## Workflows
