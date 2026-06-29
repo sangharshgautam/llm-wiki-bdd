@@ -1,18 +1,20 @@
 # External Source References
 
-# Add as many projects as you want under each section.
-# Golden features can be multiple independent test projects.
+# Add as many services as you want under each section.
+# Each golden_services path points to a service project root containing:
+#   public/openapi.yaml  — the service's OpenAPI spec
+#   *-test/              — test project subdirectories with feature files
 
 step_definitions:
   - path: C:/Users/sangh/IdeaProjects/sangharshgautam/openapi-bdd
     description: Shared openapi-bdd step definitions (LLM will discover @Given/@When/@Then files automatically)
 
-golden_features:
-  - path: C:/Users/sangh/IdeaProjects/sangharshgautam/coffee-ordering-api/coffee-ordering-service-test
-    description: Coffee Ordering API test project
-  # Add more golden feature projects below:
-  # - path: C:/Path/To/Another/TestProject
-  #   description: Another QA project with different patterns
+golden_services:
+  - path: C:/Users/sangh/IdeaProjects/sangharshgautam/coffee-ordering-api
+    description: Coffee Ordering API service (LLM reads public/openapi.yaml + scans *-test/ subdirs)
+  # Add more golden service projects below:
+  # - path: C:/Path/To/Another/Service
+  #   description: Another service with different patterns
 
 new_specs:
   - path: C:/Users/sangh/IdeaProjects/sangharshgautam/llm-wiki-bdd/public/openapi.yaml

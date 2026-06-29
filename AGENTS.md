@@ -7,7 +7,7 @@ golden feature files, OpenAPI specs) and generated test output.
 
 - `raw_sources/` — Immutable source documents. NEVER modify.
   - `step_definitions/` — Step definition source files
-  - `golden_features/<project>/` — Example BDD projects with feature files, config, and lifecycle setup
+  - `golden_services/<project>/` — Example BDD projects with feature files, config, and lifecycle setup
   - `new_specs/` — New API specs (OpenAPI, etc.) waiting to be processed
 - `wiki/` — LLM-maintained knowledge base. Create and update freely.
   - `step_dictionary/` — Compiled catalog of known step definitions
@@ -33,11 +33,11 @@ step_definitions:
   - path: /path/to/step-definition-library
     description: Shared step definition library
 
-golden_features:
+golden_services:
   - path: /path/to/golden-project-1
-    description: First reference test project
+    description: First reference test project (scans *-test/ subdirs)
   - path: /path/to/golden-project-2
-    description: Second reference test project
+    description: Second reference test project (scans *-test/ subdirs)
 
 new_specs:
   - path: /path/to/new-api-spec.yaml
@@ -71,8 +71,11 @@ Each step page must document:
 
 ### 2. Ingest Golden Features
 
-Read `raw_sources/golden_features/<project>/` or paths from `SOURCES.md`. Discover
-the project structure automatically — look for:
+Read `raw_sources/golden_services/<project>/` or paths from `SOURCES.md`. Each path points to a service project directory containing:
+- `public/openapi.yaml` — the OpenAPI spec for the service
+- `*-test/` — test subdirectories with feature files and config
+
+For each found test subdirectory, discover the project structure automatically — look for:
 - Feature files (`.feature`) — scenario structure, step sequencing, assertion style
 - Test runner configuration
 - Lifecycle setup (app startup/shutdown, host/port rewriting)
@@ -96,11 +99,12 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
 2. Read ALL pages in `wiki/step_dictionary/` and compile a complete list of every available step expression
 3. For each endpoint+HTTP method, map it to steps from that list only. Do NOT write any step that is not in the list
 4. If no existing step covers a required action (e.g., setting a specific header, asserting a nested field), flag it as a **gap** — do not invent a new step expression
-5. Consult `wiki/qa_patterns/` to match the team's testing conventions
-6. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`
-7. Before presenting, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
-8. PRESENT the full output to the user for review, including a list of any gaps found
-9. Only write to `generated/` after user approval
+5. Read the OpenAPI specs from each golden service's `public/openapi.yaml` and cross-reference how their endpoints map to test scenarios in corresponding `*-test/` feature files — use these as examples for mapping the new spec
+6. Consult `wiki/qa_patterns/` to match the team's testing conventions
+7. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`
+8. Before presenting, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
+9. PRESENT the full output to the user for review, including a list of any gaps found
+10. Only write to `generated/` after user approval
 
 #### Coverage expectations per endpoint:
 - **Happy path** (2xx) with field-level assertions on key response fields
@@ -129,10 +133,10 @@ When the user moves `wiki/` and `AGENTS.md` to a new machine (without raw source
 
 ### 6. Add New Golden Feature Sources
 
-When the user adds a new golden feature project path to `SOURCES.md` (or drops
-files into `raw_sources/golden_features/`) and asks to ingest:
+When the user adds a new golden service project path to `SOURCES.md` (or drops
+files into `raw_sources/golden_services/`) and asks to ingest:
 
-1. Read the new feature files and config
+1. Read the path, find `public/openapi.yaml` and scan for `*-test/` subdirectories
 2. Compare patterns against existing `wiki/qa_patterns/`
 3. Update relevant pages with new patterns, noting differences from existing ones
 4. Create `wiki/apis/<new-api>.md` if applicable
@@ -164,6 +168,7 @@ Scan `wiki/` for:
 ## Rules
 
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/` (e.g., `sg:`)
+- Generated project directory name: derive from the OpenAPI spec's `info.title` — convert to kebab-case and append `-service-test`. E.g., "FleetRoute AI Optimization API" → `fleetroute-service-test`
 - Host placeholder convention: derive from the API name (e.g., `<api-name>-api`)
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
   - `project_structure.md` — directory layout, config files, build tool

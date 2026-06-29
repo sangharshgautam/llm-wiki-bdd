@@ -37,9 +37,9 @@ step_definitions:
   - path: C:/Path/To/Your/StepDefinitionProject
     description: Your step definition library (LLM auto-discovers @Given/@When/@Then files)
 
-golden_features:
+golden_services:
   - path: C:/Path/To/Your/FirstTestProject
-    description: First QA project with feature files
+    description: First QA project (LLM scans *-test/ subdirs for feature files)
   - path: C:/Path/To/Your/SecondTestProject
     description: Second QA project (add as many as you want)
 
@@ -93,7 +93,7 @@ llm-wiki-bdd/
 │
 ├── raw_sources/                 # Immutable source files (or use SOURCES.md instead)
 │   ├── step_definitions/        # Your Java step definition files
-│   ├── golden_features/<project>/  # Existing QA feature files + test config
+│   ├── golden_services/<project>/  # Existing QA feature files + test config
 │   └── new_specs/               # New OpenAPI specs to process
 │
 ├── wiki/                        # LLM-maintained knowledge base (auto-generated)
@@ -116,11 +116,11 @@ The LLM reads your `@Given`/`@When`/`@Then`/`@And`-annotated Java classes and cr
 categorized pages in `wiki/step_dictionary/` documenting each step's expression, method
 signature, and usage examples from your golden feature files.
 
-### Ingest golden features
+### Ingest golden services
 
-The LLM reads existing `.feature` files and test project configuration to extract your
-team's testing patterns — how scenarios are structured, how error cases are written,
-how payloads are managed, how Spring Boot lifecycle is set up. Stored in
+The LLM reads the project path from `SOURCES.md`, scans for `*-test/` subdirectories, and extracts
+your team's testing patterns — how scenarios are structured, how error cases are written,
+how payloads are managed, how the app lifecycle is set up. Stored in
 `wiki/qa_patterns/`.
 
 ### Generate tests
@@ -184,13 +184,13 @@ The wiki contains everything the LLM needs to generate tests:
 
 None of this changes unless your step definitions or testing style change (see below).
 
-## Adding New Golden Feature Sources
+## Adding New Golden Service Projects
 
 To compound the wiki with more example projects:
 
 1. Add the new project path to `SOURCES.md`:
    ```yaml
-   golden_features:
+   golden_services:
      - path: C:/Path/To/ExistingProject1
        description: First project
      - path: C:/Path/To/NewProject2          # <-- add this
@@ -199,11 +199,12 @@ To compound the wiki with more example projects:
 
 2. Tell the LLM:
    ```
-   Ingest the new golden feature project at the path I just added to SOURCES.md.
+   Ingest the new golden service at the path I just added to SOURCES.md.
    ```
 
-The LLM reads the new `.feature` files, extracts patterns, and updates existing
-wiki pages. For example, if the new project uses a different assertion style or
+The LLM reads the path, scans for `*-test/` subdirectories, extracts patterns from
+`.feature` files and config, and updates existing wiki pages. For example, if the new
+project uses a different assertion style or
 auth pattern, the LLM adds it to `qa_patterns/`. The wiki compounds — next time
 you generate tests, the LLM will know both styles.
 
