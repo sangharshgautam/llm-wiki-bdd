@@ -225,7 +225,8 @@ Scan `wiki/` for:
 ## Rules
 
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/` (e.g., `sg:`)
-- Generated project directory name: derive from the OpenAPI spec's `info.title` — convert to lowercase kebab-case and append `-service-test`. E.g., "FleetRoute AI Optimization API" → `fleetroute-service-test`
+- Generated project directory name: STRICTLY derive from the OpenAPI spec's `info.title` — convert to lowercase kebab-case and append `-service-test`. Never deviate from this convention. E.g., "FleetRoute AI Optimization API" → `fleetroute-service-test`, "Express Coffee Ordering API" → `express-coffee-ordering-service-test`
+- **Overwrite existing files**: If the target directory `<current-working-dir>/<api-name>-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
 - Host placeholder convention: derive from the API name (e.g., `<api-name>-api`)
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
   - `project_structure.md` — directory layout, config files, build tool
