@@ -53,43 +53,40 @@ must recursively search for all Java files containing Cucumber annotations
 
 ### 1. Ingest Step Definitions
 
-Read step definition Java files (from `raw_sources/step_definitions/` or
-`SOURCES.md`). For each Cucumber
-annotation (`@Given`, `@When`, `@Then`, `@And`), create or update a page in
-`wiki/step_dictionary/` grouped by category.
+Read step definition files (from `raw_sources/step_definitions/` or
+`SOURCES.md`). For each step definition
+marker (e.g., Cucumber annotations like `@Given`, `@When`, `@Then`, `@And`),
+create or update a page in `wiki/step_dictionary/` grouped by category.
 
-Categories:
-- `http_method_steps.md` — GET, POST, PUT, DELETE, PATCH
-- `request_payload_steps.md` — inline body, file-based payload
-- `parameter_steps.md` — query, path, header parameters
-- `authentication_steps.md` — OAuth2 token, basic auth, base URI/path
-- `response_assertion_steps.md` — status code, field values, content-type, schema, file match, timing
-- `context_variable_steps.md` — save response field to variable, use variable in request
-- `helper_steps.md` — print response, response time
+Discover categories dynamically from the steps found. Typical categories
+include HTTP methods, request payloads, parameters, authentication, response
+assertions, context variables, and helpers — but derive them from the actual
+steps rather than assuming.
 
 Each step page must document:
-- The exact Cucumber expression (e.g. `sg: I send a POST request`)
-- The Java method signature
+- The exact step expression (e.g. `sg: I send a POST request`)
+- The method/function signature
 - What the step does in plain language
 - Concrete examples from golden feature files (quote the exact Gherkin)
 
 ### 2. Ingest Golden Features
 
-Read `raw_sources/golden_features/<project>/` or paths from `SOURCES.md`. Analyze:
-- `.feature` files — scenario structure, step sequencing, assertion style
-- `CucumberTest.java` — runner configuration
-- `AppSetup.java` — Spring Boot lifecycle, host/port rewriting
-- `junit-platform.properties` — glue packages, plugins
-- `pom.xml` — dependencies (especially openapi-bdd artifact)
-- `requestPayload/*.json` — payload file naming and content patterns
-- `responsePayload/*.json` — expected response patterns
+Read `raw_sources/golden_features/<project>/` or paths from `SOURCES.md`. Discover
+the project structure automatically — look for:
+- Feature files (`.feature`) — scenario structure, step sequencing, assertion style
+- Test runner configuration (e.g., `CucumberTest.java` or equivalent)
+- Lifecycle setup (e.g., `AppSetup.java`, `BeforeAll` hooks, host/port rewriting)
+- Build/config files (e.g., `pom.xml`, `build.gradle`, `junit-platform.properties`, `cucumber.yml`)
+- Payload directories and naming conventions (`requestPayload/`, `responsePayload/`)
+
+Store the discovered file names, directory layout, and build tool in the wiki.
 
 Update `wiki/qa_patterns/`:
 - `project_structure.md` — how test projects are organized
 - `scenario_patterns.md` — common scenario structures and flows
 - `error_testing.md` — how 4xx/5xx error scenarios are written
 - `payload_management.md` — inline JSON vs file reference conventions
-- `lifecycle_setup.md` — Spring Boot startup, WireMock, port rewriting
+- `lifecycle_setup.md` — app startup/shutdown, host/port rewriting patterns
 
 ### 3. Generate Tests for a New OpenAPI Spec
 
@@ -98,18 +95,7 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
 1. Read the OpenAPI spec (parse YAML for endpoints, operations, schemas, responses)
 2. Consult `wiki/step_dictionary/` to map each endpoint+HTTP method to available steps
 3. Consult `wiki/qa_patterns/` to match the team's testing conventions
-4. Draft the generated project:
-
-```
-generated/<api-name>-service-test/
-  features/<api-name>.feature
-  CucumberTest.java
-  AppSetup.java
-  junit-platform.properties
-  pom.xml
-  requestPayload/*.json
-  responsePayload/*.json
-```
+4. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`:
 
 5. PRESENT the full output to the user for review
 6. Only write to `generated/` after user approval
@@ -175,8 +161,8 @@ Scan `wiki/` for:
 
 ## Rules
 
-- ALL step references in generated feature files MUST use the `sg:` prefix
-- Host placeholder convention: `<api-short-name>-api` (e.g. `coffee-api`, `fleetroute-api`)
+- ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/` (e.g., `sg:`)
+- Host placeholder convention: derive from the API name (e.g., `<api-name>-api`)
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
   - `project_structure.md` — directory layout, config files, build tool
   - `lifecycle_setup.md` — how the app under test is started/stopped, host/port rewriting
@@ -191,6 +177,6 @@ Scan `wiki/` for:
 Before showing generated output to the user, verify:
 1. Every Gherkin step in the feature file exists in `wiki/step_dictionary/`
 2. Host placeholder is consistent across all generated files
-3. Payload file references (e.g. `"createOrder"`) match actual files in the generated structure
+3. Payload file references match actual files in the generated structure
 4. All generated config files follow the patterns in `wiki/qa_patterns/`
 5. The scenario count provides reasonable coverage (happy path + all error codes)
