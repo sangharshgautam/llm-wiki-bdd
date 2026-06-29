@@ -105,7 +105,10 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
 6. Consult `wiki/qa_patterns/` to match the team's testing conventions
 7. Draft the generated project at `<service-dir>/<api-name>-test/` (sibling to the spec's `public/` directory, mirroring the golden service layout) following the exact directory tree from `wiki/qa_patterns/project_structure.md`:
    - Java files (`CucumberTest.java`, lifecycle setup) go under `src/test/java/<package>/`
-   - Feature files go under `src/test/resources/features/`
+   - Feature files go under `src/test/resources/features/` organized as:
+     - `happyPath.feature` — all 2xx scenarios, each tagged `@H001`, `@H002`, …
+     - `negativePath.feature` — all 4xx/5xx error scenarios, each tagged `@N001`, `@N002`, …
+     - `businessScenarios.feature` — business rule violations, validation failures, each tagged `@B001`, `@B002`, …
    - Config files (`junit-platform.properties`) go under `src/test/resources/`
    - `requestPayload/`, `responsePayload/` go under `src/test/resources/`
    - Mock files (`mocks/`, `mappings/`, `__files/`) go under `src/test/resources/`
