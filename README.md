@@ -11,6 +11,77 @@ that knowledge to generate test suites that match your team's exact style.
 
 The wiki compounds: every project you ingest makes future generations better.
 
+## How It Works
+
+```
+                                   ┌─────────────────────────────────────────────────────┐
+                                   │                     INGEST PHASE                     │
+                                   │  (run once per source; wiki compounds over time)     │
+                                   └─────────────────────────────────────────────────────┘
+                                                  │
+                    ┌─────────────────────────────┼─────────────────────────────┐
+                    │                             │                             │
+                    ▼                             ▼                             ▼
+    ┌───────────────────────────┐   ┌──────────────────────────────┐   ┌──────────────────┐
+    │  Step Definition Source   │   │  Golden Service Projects     │   │  New Specs        │
+    │  (Java @Given/@When/@Then)│   │  (feature files, config,     │   │  (frontend_spec,  │
+    │  e.g. openapi-bdd         │   │   lifecycle, payloads)       │   │   backend_spec)   │
+    └───────────┬───────────────┘   └──────────────┬───────────────┘   └────────┬─────────┘
+                │                                  │                            │
+                │ parse annotations                │ extract patterns           │ read fresh on
+                │                                  │                            │ each generate
+                ▼                                  ▼                            ▼
+    ┌───────────────────────────┐   ┌──────────────────────────────┐   ┌──────────────────┐
+    │  wiki/step_dictionary/    │   │  wiki/qa_patterns/           │   │  frontend spec   │
+    │  ┌─────────────────────┐  │   │  ┌────────────────────────┐  │   │  backend spec    │
+    │  │ http_method_steps   │  │   │  │ project_structure      │  │   │                  │
+    │  │ request_payload_    │  │   │  │ scenario_patterns      │  │   │  Parse schemas,  │
+    │  │   steps             │  │   │  │ error_testing          │  │   │  endpoints,      │
+    │  │ parameter_steps     │  │   │  │ payload_management     │  │   │  responses       │
+    │  │ authentication_     │  │   │  │ lifecycle_setup        │  │   │                  │
+    │  │   steps             │  │   │  └────────────────────────┘  │   └────────┬─────────┘
+    │  │ response_assertion_ │  │   └──────────────┬───────────────┘            │
+    │  │   steps             │  │                  │                            │
+    │  │ context_variable_   │  │                  │                            │
+    │  │   steps             │  │                  ▼                            ▼
+    │  │ helper_steps        │  │   ┌──────────────────────────────────────────────────────┐
+    │  └─────────────────────┘  │   │                  GENERATE PHASE                       │
+    │  (exact step expressions) │   │                                                       │
+    └───────────┬───────────────┘   │  1. Reason about scenarios (Happy/Negative/Business)  │
+                │                  │  2. Map each scenario to available steps from wiki     │
+                │                  │  3. Generate payloads & mocks per scenario tag         │
+                ▼                  │                                                       │
+    ┌───────────────────────────┐   │                    ┌────────────────────┐              │
+    │  Verify: every Gherkin    │   │                    │  For each scenario │              │
+    │  step exists verbatim in  │   │                    │  (H001, N001,      │              │
+    │  wiki/step_dictionary/    │   │                    │   B001, ...):      │              │
+    └───────────────────────────┘   │                    │                    │              │
+                                    │                    │  1. requestPayload │              │
+                                    │                    │     /<TAG>.json    │              │
+                                    │                    │  2. responsePayload│              │
+                                    │                    │     /<TAG>.json    │              │
+                                    │                    │  3. mocks/<TAG>.json              │
+                                    │                    └────────────────────┘              │
+                                    └──────────────────────────┬───────────────────────────┘
+                                                               ▼
+                                    ┌──────────────────────────────────────────────────────┐
+                                    │              GENERATED OUTPUT                         │
+                                    │  ┌─────────────────────────────────────────────┐     │
+                                    │  │ journey-<api-name>-service-test/            │     │
+                                    │  │ ├── pom.xml                                │     │
+                                    │  │ ├── scenarios.md   (tabular doc)           │     │
+                                    │  │ └── src/test/resources/                    │     │
+                                    │  │     ├── features/                          │     │
+                                    │  │     │   ├── happyPath.feature  (@H001,…)   │     │
+                                    │  │     │   ├── negativePath.feature(@N001,…)  │     │
+                                    │  │     │   └── businessScenarios.feature(@B…) │     │
+                                    │  │     ├── requestPayload/ (H001.json, …)     │     │
+                                    │  │     ├── responsePayload/(H001.json, …)     │     │
+                                    │  │     └── mocks/        (H001.json, …)       │     │
+                                    │  └─────────────────────────────────────────────┘     │
+                                    └──────────────────────────────────────────────────────┘
+```
+
 ## Getting Started
 
 ### Prerequisites
