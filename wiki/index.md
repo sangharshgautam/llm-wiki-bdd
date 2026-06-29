@@ -35,4 +35,4 @@
 |---|---|---|
 | `raw_sources/step_definitions/ApiStepDefinitions.java` | Step definitions | 2026-06-28 |
 | `raw_sources/golden_services/coffee-ordering/` | Golden feature project | 2026-06-28 |
-| `raw_sources/new_specs/fleetroute-openapi.yaml` | Target spec (generated) | 2026-06-28 |
+| `raw_sources/frontend_spec/fleetroute-openapi.yaml` | Target spec (generated) | 2026-06-28 |

@@ -12,7 +12,7 @@
 - Created `wiki/apis/coffee-ordering.md`
 
 ## [2026-06-28] generate | FleetRoute AI Optimization API
-- Analyzed `raw_sources/new_specs/fleetroute-openapi.yaml`
+- Analyzed `raw_sources/frontend_spec/fleetroute-openapi.yaml`
 - Generated `generated/fleetroute-service-test/` (6 scenarios, 2 request payloads, 3 response payloads)
 - Created `wiki/apis/fleetroute.md`
 - Coverage: 200 happy path, 200 alternative strategy, 400 missing field, 400 UNREACHABLE_STOPS, 500 server error, response time

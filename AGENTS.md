@@ -8,7 +8,8 @@ golden feature files, OpenAPI specs) and generated test output.
 - `raw_sources/` — Immutable source documents. NEVER modify.
   - `step_definitions/` — Step definition source files
   - `golden_services/<project>/` — Example BDD projects with feature files, config, and lifecycle setup
-  - `new_specs/` — New API specs (OpenAPI, etc.) waiting to be processed
+  - `frontend_spec/` — New frontend API specs (OpenAPI, etc.) waiting to be processed
+  - `backend_spec/` — New backend API specs (OpenAPI, etc.) waiting to be processed
 - `wiki/` — LLM-maintained knowledge base. Create and update freely.
   - `step_dictionary/` — Compiled catalog of known step definitions
   - `qa_patterns/` — Extracted testing conventions and style
@@ -93,37 +94,82 @@ Update `wiki/qa_patterns/`:
 - `payload_management.md` — inline JSON vs file reference conventions
 - `lifecycle_setup.md` — app startup/shutdown, host/port rewriting patterns
 
-### 3. Generate Tests for a New OpenAPI Spec
+### 3. Generate Tests
 
-When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks to generate tests:
+When the user adds specs to `SOURCES.md` (or `raw_sources/frontend_spec/` + `raw_sources/backend_spec/`) and asks to generate tests:
 
-1. Read the OpenAPI spec (parse YAML for endpoints, operations, schemas, responses)
-2. Read ALL pages in `wiki/step_dictionary/` and compile a complete list of every available step expression
-3. For each endpoint+HTTP method, map it to steps from that list only. Do NOT write any step that is not in the list
-4. If no existing step covers a required action (e.g., setting a specific header, asserting a nested field), flag it as a **gap** — do not invent a new step expression
-5. Read the OpenAPI specs from each golden service's `public/openapi.yaml` and cross-reference how their endpoints map to test scenarios in corresponding `*-test/` feature files — use these as examples for mapping the new spec
-6. Consult `wiki/qa_patterns/` to match the team's testing conventions
-7. Draft the generated project at `<service-dir>/<api-name>-test/` (sibling to the spec's `public/` directory, mirroring the golden service layout) following the exact directory tree from `wiki/qa_patterns/project_structure.md`:
-   - Java files (`CucumberTest.java`, lifecycle setup) go under `src/test/java/<package>/`
-   - Feature files go under `src/test/resources/features/` organized as:
-     - `happyPath.feature` — all 2xx scenarios, each tagged `@H001`, `@H002`, …
-     - `negativePath.feature` — all 4xx/5xx error scenarios, each tagged `@N001`, `@N002`, …
-     - `businessScenarios.feature` — business rule violations, validation failures, each tagged `@B001`, `@B002`, …
-   - Config files (`junit-platform.properties`) go under `src/test/resources/`
-   - `requestPayload/` — request body JSON files named by scenario tag (e.g., `H001.json`)
-   - `responsePayload/` — expected response JSON files named by scenario tag (e.g., `H001.json`)
-   - `mocks/` — mock/stub JSON files named by scenario tag (e.g., `H001.json`)
-   - Build file (`pom.xml`) goes at the project root
-8. Before finalizing, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
-9. Write all files to `<service-dir>/<api-name>-test/`
+1. **Read both specs**: Parse the frontend OpenAPI spec and backend OpenAPI spec (from `SOURCES.md` sections `frontend_spec` and `backend_spec`). Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
 
-#### Coverage expectations per endpoint:
-- **Happy path** (2xx) with field-level assertions on key response fields
-- **Each documented 4xx error** — at least one scenario per error code
-- **5xx error** if documented in the spec
-- **Response time** assertion
-- **Content type** assertion
-- **Schema validation** if applicable — use assertion steps from `wiki/step_dictionary/`
+2. **Read golden services**: Read the OpenAPI specs from each golden service's `public/openapi.yaml` and cross-reference how their endpoints map to test scenarios in corresponding `*-test/` feature files — use these as examples of scenario structure, step usage, and assertion style.
+
+3. **Compile step dictionary**: Read ALL pages in `wiki/step_dictionary/` and compile a complete list of every available step expression.
+
+4. **Reason about scenarios**: For each endpoint/operation in the frontend spec, reason through the full flow:
+   - **Happy path** — a valid frontend request is sent, backend responds with a valid response, and the expected frontend response is returned. Mock the backend with a valid stub derived from the backend spec.
+   - **Negative path** — frontend validation rejects (4xx), backend returns error (4xx/5xx), or transforms fail.
+   - **Business scenarios** — valid-by-schema requests that violate business rules (e.g., duplicate ID, out-of-range values, conflicting state).
+
+5. **Map endpoints to steps**: For each scenario, map the required actions (request setup, assertions, mocks, etc.) to steps from the compiled dictionary only. Do NOT write any step that is not in the list. If no existing step covers a required action, flag it as a **gap** — do not invent a new step expression.
+
+6. **Consult QA patterns**: Follow conventions from `wiki/qa_patterns/` for scenario structure, payload management, lifecycle setup, and error testing.
+
+7. **Draft the generated project** at `<service-dir>/<api-name>-test/` (sibling to the spec's `public/` directory) with this structure:
+    ```
+    <api-name>-test/
+    ├── pom.xml (or equivalent build file)
+    ├── src/
+    │   └── test/
+    │       ├── java/<package>/
+    │       │   ├── CucumberTest.java (or equivalent runner)
+    │       │   └── AppSetup.java (or equivalent lifecycle setup)
+    │       └── resources/
+    │           ├── features/
+    │           │   ├── happyPath.feature      — 2xx scenarios, tagged @H001, @H002, …
+    │           │   ├── negativePath.feature    — 4xx/5xx error scenarios, tagged @N001, @N002, …
+    │           │   └── businessScenarios.feature — business rule violations, tagged @B001, @B002, …
+    │           ├── requestPayload/
+    │           │   ├── H001.json              — H001's valid frontend request body
+    │           │   └── …
+    │           ├── responsePayload/
+    │           │   ├── H001.json              — H001's expected frontend response body
+    │           │   └── …
+    │           ├── mocks/
+    │           │   ├── H001.json              — H001's backend stub (derived from backend spec)
+    │           │   └── …
+    │           └── junit-platform.properties (or equivalent config)
+    └── scenarios.md                           — explanation of every scenario in tabular form
+    ```
+
+8. **For each scenario, generate the following**:
+    - **Feature file scenario** — Gherkin steps for the test
+    - **Request payload** (`requestPayload/<TAG>.json`) — valid/invalid frontend request body matching the operation's request schema
+    - **Response payload** (`responsePayload/<TAG>.json`) — expected frontend response body for assertion
+    - **Backend mock** (`mocks/<TAG>.json`) — stub derived from the backend spec's endpoint and response schema (for H scenarios, a valid 200 stub; for N scenarios, the relevant error stub)
+    - **All payload/mock files named by scenario tag** — `H001.json`, `N001.json`, `B001.json`, etc.
+
+9. **Generate `scenarios.md`** — place at the project root documenting all scenarios in tabular form:
+    ```markdown
+    # Scenarios — <api-name>
+
+    | Tag  | Type     | Description                        | Request Payload           | Mock                        | Expected Response           |
+    |------|----------|------------------------------------|---------------------------|-----------------------------|-----------------------------|
+    | H001 | Happy    | Valid request returns 200 OK       | requestPayload/H001.json  | mocks/H001.json (backend)   | responsePayload/H001.json   |
+    | H002 | Happy    | Valid request with optional fields  | requestPayload/H002.json  | mocks/H002.json (backend)   | responsePayload/H002.json   |
+    | N001 | Negative | Missing required field returns 400  | requestPayload/N001.json  | —                           | —                           |
+    | N002 | Negative | Backend returns 500                 | requestPayload/N002.json  | mocks/N002.json (backend)   | responsePayload/N002.json   |
+    | B001 | Business | Duplicate ID returns 409            | requestPayload/B001.json  | —                           | responsePayload/B001.json   |
+    ```
+
+    Include columns: Tag, Type (Happy/Negative/Business), Description, Request Payload (file path), Mock (file path), Expected Response (file path).
+
+10. **Before finalizing**, verify:
+    - Every Gherkin step line exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix
+    - Every payload file referenced in feature files exists in `requestPayload/` or `responsePayload/`
+    - Every mock file referenced exists in `mocks/`
+    - Host placeholder is consistent across all files
+    - The scenario count provides reasonable coverage
+
+11. Write all files to `<service-dir>/<api-name>-test/`
 
 ### 4. Update Wiki After Approval
 
@@ -179,15 +225,21 @@ Scan `wiki/` for:
 ## Rules
 
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/` (e.g., `sg:`)
-- Generated project directory name: derive from the OpenAPI spec's `info.title` — convert to kebab-case and append `-service-test`. E.g., "FleetRoute AI Optimization API" → `fleetroute-service-test`
+- Generated project directory name: derive from the OpenAPI spec's `info.title` — convert to lowercase kebab-case and append `-service-test`. E.g., "FleetRoute AI Optimization API" → `fleetroute-service-test`
 - Host placeholder convention: derive from the API name (e.g., `<api-name>-api`)
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
   - `project_structure.md` — directory layout, config files, build tool
   - `lifecycle_setup.md` — how the app under test is started/stopped, host/port rewriting
   - `payload_management.md` — inline JSON vs file-based payloads
-- For each POST/PUT endpoint with a request body schema, generate a request payload JSON file in `requestPayload/`
-- For each non-trivial response schema, generate a response payload JSON file in `responsePayload/` for file-based assertions
-- If the golden services use mocks (WireMock or similar), generate `mocks/` or `mappings/` + `__files/` with stubs matching the new API's endpoints
+- **Payload and mock file naming**: Every scenario payload and mock file MUST be named by its scenario tag (e.g., `H001.json`, `N001.json`, `B001.json`) — never by endpoint name or other convention
+- **For each happy path scenario (H-tagged)**: generate all three files:
+  - `requestPayload/H001.json` — valid frontend request body per the frontend spec request schema
+  - `responsePayload/H001.json` — expected frontend response body per the frontend spec response schema
+  - `mocks/H001.json` — a valid backend stub derived from the backend spec's corresponding endpoint and response schema
+- **For each negative scenario (N-tagged)**: if the error originates from the backend, include a mock; if it's frontend-side validation (4xx), no mock is needed
+- **For each business scenario (B-tagged)**: include request and response payloads; include a backend mock only if the business validation requires backend interaction
+- **Backend mock content**: must be derived from the backend spec's response schema for the relevant operation — a valid response stub for the scenario (e.g., 200 for happy, 400/500 for error)
+- **Every generated project must include `scenarios.md`** at the root, documenting all scenarios in tabular form
 - NEVER hallucinate step definitions. If a needed step is not in `wiki/step_dictionary/`, flag it as a gap.
 - If the lifecycle or config patterns from `wiki/qa_patterns/` don't apply to this project, flag the gap
 - Validate all generated files against the rules above before writing
@@ -199,6 +251,8 @@ Before writing files, verify:
 2. Host placeholder is consistent across all generated files
 3. Payload file references match actual files in the generated structure
 4. All generated config files follow the patterns in `wiki/qa_patterns/`
-5. The scenario count provides reasonable coverage (happy path + all error codes)
-6. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
-7. Output location: `<service-dir>/<api-name>-test/`
+5. The scenario count provides reasonable coverage (happy path + all error codes + business scenarios)
+6. For each scenario tag (H/N/B), the corresponding `requestPayload/<TAG>.json`, `responsePayload/<TAG>.json`, and `mocks/<TAG>.json` (where applicable) all exist and are referenced correctly in feature files
+7. `scenarios.md` is present at the project root with all scenarios documented in tabular form
+8. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
+9. Output location: `<service-dir>/<api-name>-test/`

@@ -16,6 +16,9 @@ golden_services:
   # - path: C:/Path/To/Another/Service
   #   description: Another service with different patterns
 
-new_specs:
+frontend_spec:
   - path: C:/Users/sangh/IdeaProjects/sangharshgautam/llm-wiki-bdd/public/openapi.yaml
     description: FleetRoute AI Optimization API
+
+backend_spec:
+  # Add backend API specs here

@@ -43,9 +43,13 @@ golden_services:
   - path: C:/Path/To/Your/SecondTestProject
     description: Second QA project (add as many as you want)
 
-new_specs:
+frontend_spec:
   - path: C:/Path/To/Your/NewApi/openapi.yaml
     description: New API spec to generate tests for
+
+backend_spec:
+  - path: C:/Path/To/Your/BackendApi/openapi.yaml
+    description: Backend API spec to generate tests for
 ```
 
 > For `step_definitions`, point to the **project root directory**. The LLM recursively
@@ -71,7 +75,7 @@ The LLM will:
 
 **4. Generate tests for a new API**
 
-Add a new spec path to `SOURCES.md` (or drop it in `raw_sources/new_specs/`) and tell your LLM:
+Add a new spec path to `SOURCES.md` (or drop it in `raw_sources/frontend_spec/` or `raw_sources/backend_spec/`) and tell your LLM:
 
 ```
 Generate tests for the new API spec from SOURCES.md.
@@ -93,7 +97,8 @@ llm-wiki-bdd/
 ├── raw_sources/                 # Immutable source files (or use SOURCES.md instead)
 │   ├── step_definitions/        # Your step definition source files
 │   ├── golden_services/<project>/  # Existing service projects (openapi.yaml + *-test/)
-│   └── new_specs/               # New OpenAPI specs to process
+   │   ├── frontend_spec/               # New frontend API specs to process
+   │   └── backend_spec/                # New backend API specs to process
 │
 └── wiki/                        # LLM-maintained knowledge base (auto-generated)
     ├── step_dictionary/         # Catalog of known step definitions
@@ -137,7 +142,7 @@ write operations inside `wiki/`. Just tell your LLM:
 
 ```
 Follow AGENTS.md. Clean wiki/ completely, then ingest everything from SOURCES.md
-and generate tests for each new_specs entry.
+and generate tests for each frontend_spec and backend_spec entry.
 ```
 
 ### Lint (periodic)
