@@ -6,6 +6,7 @@
 - **Version:** 1.0.0
 - **Base URL:** `https://api.expresscoffee.mock`
 - **Test host placeholder:** `coffee-api`
+- **Architecture:** Single Camel REST service (no separate backend mock needed — service starts in-process)
 
 ## Endpoints
 
@@ -32,17 +33,25 @@ Place a new coffee order.
 **Error responses:**
 - **400** — Invalid request body or missing required fields. Response: `{"error": "Missing required field: coffeeType"}`
 
-## Test Scenarios
+## Test Scenarios (Golden Reference)
 
-10 scenarios in the golden feature file covering:
-- Valid order with inline JSON body
-- Valid order with file-based payload
-- Rejected order (empty coffeeType) with file-based invalid payload
-- Rejected order (missing coffeeType) with inline body
-- Rejected order (empty size)
-- Rejected order (quantity = 0)
-- Price calculation for small size (totalPrice = 10.5)
-- Price calculation for large size (totalPrice = 11.0)
-- Response time under 5000ms
-- File-based response assertions (contains file)
-- File-based error response assertions
+11 scenarios in `coffee-ordering.feature` serving as a pattern reference:
+
+| Scenario | Type | Tag Pattern (if generated today) |
+|---|---|---|
+| Place a valid coffee order | Happy (inline) | H001 |
+| Place order with request payload file | Happy (file) | H002 |
+| Reject order with empty coffee type | Negative (file) | N001 |
+| Reject order with missing coffee type | Negative (inline, exact) | N002 |
+| Reject order with empty size | Negative (inline, contains) | N003 |
+| Reject order with invalid quantity | Negative (inline, contains) | N004 |
+| Calculate price for small size | Business | B001 |
+| Calculate price for large size | Business | B002 |
+| Response time is acceptable | Helper | — |
+| Response contains expected fields (file) | Happy (file assert) | H003 |
+| Error response matches file | Negative (file assert) | N005 |
+
+## Notes
+
+- No backend mock needed — the service under test is self-contained
+- Payload files use descriptive names (`createOrder.json`, `invalidOrder.json`) — the old convention before tag-based naming

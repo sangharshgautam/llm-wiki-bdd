@@ -47,13 +47,21 @@ public class AppSetup {
    - When a feature file uses `http://coffee-api/api/orders`, the step definition rewrites it to `http://localhost:<dynamic-port>/api/orders`
 4. **Cleanup**: `@AfterAll` gracefully closes the application context
 
+## Mock Considerations
+
+The coffee-ordering golden service does NOT use external mocks — it starts the real Spring Boot application. For projects with frontend-backend architecture where the backend is mocked:
+
+- The `mocks/` directory contains stub JSON files
+- Mock setup steps would appear in the feature file before the request is sent
+- If the test framework supports WireMock or similar, the lifecycle setup would include mock server startup/teardown alongside the app context
+
 ## Glue Configuration
 
 The `AppSetup` class must be in a package included in the Cucumber glue:
 
 ```properties
-cucumber.glue=com.example.api.steps,com.example.coffee.steps
+cucumber.glue=com.example.api.steps,<project>.steps
 ```
 
 - `com.example.api.steps` — Step definitions from openapi-bdd
-- `com.example.coffee.steps` — Lifecycle hooks (AppSetup)
+- `<project>.steps` — Lifecycle hooks (AppSetup)

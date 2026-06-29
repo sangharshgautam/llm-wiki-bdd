@@ -1,12 +1,17 @@
 # Error Testing Patterns
 
-How 4xx/5xx error scenarios are written, extracted from `coffee-ordering.feature`.
+How 4xx/5xx error scenarios are written, extracted from `coffee-ordering.feature` and generalized for the frontend-backend architecture.
 
-## Error Testing Conventions
+## Error Origin: Two Layers
 
-**400 Bad Request** — Test each invalid/missing field separately:
+Errors can come from two layers of the Camel REST gateway:
+
+### 1. Frontend-side validation (no mock needed)
+
+The Camel route validates the incoming request against the frontend schema before calling the backend. These errors are **tested without mocks**.
 
 ```gherkin
+@N001
 Scenario: Reject order with missing coffee type
   Given sg: I have a REST API endpoint at "http://coffee-api/api/orders"
   And sg: I have the following request body:
@@ -18,35 +23,36 @@ Scenario: Reject order with missing coffee type
   And sg: the response should have field "error" with value "Missing required field: coffeeType"
 ```
 
-**400 with empty field:**
-```gherkin
-Scenario: Reject order with empty coffee type
-  Given sg: I have a REST API endpoint at "http://coffee-api/api/orders"
-  And sg: I have request payload from file "invalidOrder"
-  When sg: I send a POST request
-  Then sg: the response status code should be 400
-  And sg: the response should contain "Missing required field"
-```
+### 2. Backend-originated error (include mock)
 
-**400 with partial match assertion (contains):**
+The backend returns an error response. A mock is placed in `mocks/<TAG>.json` to simulate the backend error, derived from the backend spec.
+
 ```gherkin
-Scenario: Reject order with invalid quantity
+@N002
+Scenario: Backend returns 500 internal error
   Given sg: I have a REST API endpoint at "http://coffee-api/api/orders"
   And sg: I have the following request body:
     """
-    {"coffeeType":"Latte","size":"medium","quantity":0}
+    {"coffeeType":"Latte","size":"medium","quantity":1}
     """
   When sg: I send a POST request
-  Then sg: the response status code should be 400
-  And sg: the response should have field "error" containing "quantity"
+  Then sg: the response status code should be 500
+  And sg: the response should have field "error" containing "internal"
 ```
+
+## Error Assertion Styles
+
+| Style | Step | When to Use |
+|---|---|---|
+| **Exact field match** | `the response should have field "error" with value "exact message"` | Error message is fully deterministic |
+| **Partial field match** | `the response should have field "error" containing "partial"` | Error message has dynamic parts (IDs, timestamps) |
+| **Body contains** | `the response should contain "text"` | Error is in the body but not in a structured field |
+| **File-based match** | `the response should contain file "errorResponse"` | Complex error response structure, reused across scenarios |
 
 ## Key Rules
 
-1. Test each validation failure in a **separate scenario** (one invalid field per scenario)
-2. For validation errors, choose between:
-   - **Exact field match** — `should have field "error" with value "exact message"` when the error message is deterministic
-   - **Contains match** — `should have field "error" containing "partial"` when the error message might have dynamic parts
-   - **Body contains** — `should contain "text"` when the error is in the response body but not in a structured field
-3. Use **file-based payload** (`I have request payload from file "invalidOrder"`) for commonly reused invalid inputs
-4. Use **inline JSON** for one-off invalid inputs that clearly show what field is being tested
+1. Each validation failure gets its **own scenario** (one invalid field per scenario)
+2. Frontend validation errors (4xx) need **no mock** — the Camel route produces them directly
+3. Backend errors (4xx/5xx) need a **mock stub** in `mocks/<TAG>.json` derived from the backend spec
+4. Use inline JSON for clear, one-off invalid inputs
+5. Use file-based payloads for commonly reused invalid inputs

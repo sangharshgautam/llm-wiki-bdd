@@ -113,7 +113,7 @@ When the user adds specs to `SOURCES.md` (or `raw_sources/frontend_spec/` + `raw
 
 6. **Consult QA patterns**: Follow conventions from `wiki/qa_patterns/` for scenario structure, payload management, lifecycle setup, and error testing.
 
-7. **Draft the generated project** at `<service-dir>/<api-name>-test/` (sibling to the spec's `public/` directory) with this structure:
+7. **Draft the generated project** at `<current-working-dir>/<api-name>-test/` (in the current working directory) with this structure:
     ```
     <api-name>-test/
     ├── pom.xml (or equivalent build file)
@@ -169,7 +169,7 @@ When the user adds specs to `SOURCES.md` (or `raw_sources/frontend_spec/` + `raw
     - Host placeholder is consistent across all files
     - The scenario count provides reasonable coverage
 
-11. Write all files to `<service-dir>/<api-name>-test/`
+11. Write all files to `<current-working-dir>/<api-name>-test/`
 
 ### 4. Update Wiki After Approval
 
@@ -255,4 +255,4 @@ Before writing files, verify:
 6. For each scenario tag (H/N/B), the corresponding `requestPayload/<TAG>.json`, `responsePayload/<TAG>.json`, and `mocks/<TAG>.json` (where applicable) all exist and are referenced correctly in feature files
 7. `scenarios.md` is present at the project root with all scenarios documented in tabular form
 8. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
-9. Output location: `<service-dir>/<api-name>-test/`
+9. Output location: `<current-working-dir>/<api-name>-test/`
