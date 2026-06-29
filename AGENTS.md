@@ -71,11 +71,11 @@ Each step page must document:
 
 ### 2. Ingest Golden Features
 
-Read `raw_sources/golden_services/<project>/` or paths from `SOURCES.md`. Each path points to a service project directory containing:
+Read `raw_sources/golden_services/<project>/` or paths from `SOURCES.md`. Each path points to a service project root directory containing:
 - `public/openapi.yaml` — the OpenAPI spec for the service
-- `*-test/` — test subdirectories with feature files and config
+- `*-test/` — one or more immediate subdirectories with feature files and config
 
-For each path, list only its immediate subdirectories matching `*-test/` — do not search parent directories or the project root. For each found test subdirectory, discover the project structure automatically — look for:
+For each given path, list its **immediate child directories** and filter those whose name ends with `-test`. These are the test subdirectories (e.g., `coffee-ordering-service-test/`). Do NOT go up to parent directories, and do NOT treat the project root itself as a test directory. For each found `*-test/` subdirectory, discover the project structure automatically — look for:
 - Feature files (`.feature`) — scenario structure, step sequencing, assertion style
 - Test runner configuration
 - Lifecycle setup (app startup/shutdown, host/port rewriting)
@@ -96,13 +96,13 @@ Update `wiki/qa_patterns/`:
 
 ### 3. Generate Tests
 
-When the user adds specs to `SOURCES.md` (or `raw_sources/frontend_spec/` + `raw_sources/backend_spec/`) and asks to generate tests:
+When the user asks to generate tests (after ingest is complete), do NOT re-ingest or re-read source files. Use only what is already in the wiki:
 
-1. **Read both specs**: Parse the frontend OpenAPI spec and backend OpenAPI spec (from `SOURCES.md` sections `frontend_spec` and `backend_spec`). Extract `<api-name>` from the frontend spec's `info.x-integration-catalogue.publisher-reference` — this value determines the project directory name, host placeholder, and wiki page name. Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
+1. **Read both target specs**: Parse the frontend OpenAPI spec and backend OpenAPI spec from their `SOURCES.md` paths (`frontend_spec` and `backend_spec`). These are the new specs under test and must be read fresh. Extract `<api-name>` from the frontend spec's `info.x-integration-catalogue.publisher-reference` — this value determines the project directory name, host placeholder, and wiki page name. Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
 
-2. **Read golden services**: Read the OpenAPI specs from each golden service's `public/openapi.yaml` and cross-reference how their endpoints map to test scenarios in corresponding `*-test/` feature files — use these as examples of scenario structure, step usage, and assertion style.
+2. **Read golden examples from wiki**: Read `wiki/qa_patterns/` and `wiki/apis/` for scenario patterns, testing conventions, and example API docs. Do NOT re-read golden service source files — the wiki already contains the extracted knowledge.
 
-3. **Compile step dictionary**: Read ALL pages in `wiki/step_dictionary/` and compile a complete list of every available step expression.
+3. **Compile step dictionary**: Read ALL pages in `wiki/step_dictionary/` and compile a complete list of every available step expression. Do NOT re-read step definition source files.
 
 4. **Reason about scenarios**: For each endpoint/operation in the frontend spec, reason through the full flow:
    - **Happy path** — a valid frontend request is sent, backend responds with a valid response, and the expected frontend response is returned. Mock the backend with a valid stub derived from the backend spec.
