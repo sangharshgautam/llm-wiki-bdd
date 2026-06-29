@@ -98,7 +98,7 @@ Update `wiki/qa_patterns/`:
 
 When the user adds specs to `SOURCES.md` (or `raw_sources/frontend_spec/` + `raw_sources/backend_spec/`) and asks to generate tests:
 
-1. **Read both specs**: Parse the frontend OpenAPI spec and backend OpenAPI spec (from `SOURCES.md` sections `frontend_spec` and `backend_spec`). Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
+1. **Read both specs**: Parse the frontend OpenAPI spec and backend OpenAPI spec (from `SOURCES.md` sections `frontend_spec` and `backend_spec`). Extract `<api-name>` from the frontend spec's `info.x-integration-catalogue.publisher-reference` — this value determines the project directory name, host placeholder, and wiki page name. Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
 
 2. **Read golden services**: Read the OpenAPI specs from each golden service's `public/openapi.yaml` and cross-reference how their endpoints map to test scenarios in corresponding `*-test/` feature files — use these as examples of scenario structure, step usage, and assertion style.
 
@@ -225,7 +225,7 @@ Scan `wiki/` for:
 ## Rules
 
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/` (e.g., `sg:`)
-- Generated project directory name: STRICTLY derive from the OpenAPI spec's `info.title` — convert to lowercase kebab-case and append `-service-test`. Never deviate from this convention. E.g., "FleetRoute AI Optimization API" → `fleetroute-service-test`, "Express Coffee Ordering API" → `express-coffee-ordering-service-test`
+- Generated project directory name: STRICTLY derive from the frontend OpenAPI spec's `info.x-integration-catalogue.publisher-reference` — convert to lowercase kebab-case and append `-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `fleetroute-service-test`, if it's "coffee ordering api" → `coffee-ordering-service-test`
 - **Overwrite existing files**: If the target directory `<current-working-dir>/<api-name>-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
 - Host placeholder convention: derive from the API name (e.g., `<api-name>-api`)
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
