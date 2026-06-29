@@ -48,7 +48,7 @@ When `SOURCES.md` exists, the LLM reads external paths from it instead of
 requiring files inside `raw_sources/`. You can mix both approaches.
 
 For `step_definitions` paths that point to a directory (not a file), the LLM
-must recursively search for all Java files containing Cucumber annotations
+must recursively search for all files containing step definition markers
 (`@Given`, `@When`, `@Then`, `@And`) and process all of them.
 
 ### 1. Ingest Step Definitions
@@ -137,9 +137,9 @@ files into `raw_sources/golden_features/`) and asks to ingest:
 
 ### 7. Re-Ingest Updated Step Definitions
 
-When step definitions change (user modifies Java files or updates the path):
+When step definitions change (user modifies source files or updates the path):
 
-1. Re-read all step definition Java files from `SOURCES.md` or `raw_sources/`
+1. Re-read all step definition files from `SOURCES.md` or `raw_sources/`
 2. Compare against existing `wiki/step_dictionary/` pages
 3. For each change:
    - **New step** — add a new entry to the appropriate category page
@@ -156,7 +156,7 @@ Scan `wiki/` for:
 - Stale claims contradicted by newer source ingests
 - Missing cross-references between step dictionary and QA patterns
 - Gaps where the step library doesn't cover a pattern needed by a known spec
-- Step dictionary entries that no longer match the actual Java source
+- Step dictionary entries that no longer match the actual source files
 
 ## Rules
 
