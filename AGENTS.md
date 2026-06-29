@@ -15,7 +15,6 @@ golden feature files, OpenAPI specs) and generated test output.
   - `apis/` — Documented APIs that have been ingested
   - `index.md` — Catalog of all wiki pages
   - `log.md` — Append-only chronological record of operations
-- `generated/` — Output directory. NEVER write here without human confirmation.
 - `SOURCES.md` — Optional file listing external paths to reference projects without copying. See below.
 
 ## Workflows
@@ -104,16 +103,15 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
 4. If no existing step covers a required action (e.g., setting a specific header, asserting a nested field), flag it as a **gap** — do not invent a new step expression
 5. Read the OpenAPI specs from each golden service's `public/openapi.yaml` and cross-reference how their endpoints map to test scenarios in corresponding `*-test/` feature files — use these as examples for mapping the new spec
 6. Consult `wiki/qa_patterns/` to match the team's testing conventions
-7. Draft the generated project at `generated/<api-name>-service-test/` mirroring the exact directory tree from `wiki/qa_patterns/project_structure.md`:
+7. Draft the generated project at `<service-dir>/<api-name>-test/` (sibling to the spec's `public/` directory, mirroring the golden service layout) following the exact directory tree from `wiki/qa_patterns/project_structure.md`:
    - Java files (`CucumberTest.java`, lifecycle setup) go under `src/test/java/<package>/`
    - Feature files go under `src/test/resources/features/`
    - Config files (`junit-platform.properties`) go under `src/test/resources/`
    - `requestPayload/`, `responsePayload/` go under `src/test/resources/`
    - Mock files (`mocks/`, `mappings/`, `__files/`) go under `src/test/resources/`
    - Build file (`pom.xml`) goes at the project root
-8. Before presenting, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
-9. PRESENT the full output to the user for review, including a list of any gaps found
-10. Only write to `generated/` after user approval
+8. Before finalizing, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
+9. Write all files to `<service-dir>/<api-name>-test/`
 
 #### Coverage expectations per endpoint:
 - **Happy path** (2xx) with field-level assertions on key response fields
@@ -162,7 +160,7 @@ When step definitions change (user modifies source files or updates the path):
    - **Modified step** — update the expression, method, and usage notes
    - **Removed step** — mark as deprecated or remove, noting in log
 4. Flag breaking changes (expression syntax changed, method signature changed)
-5. Check `generated/` feature files for any that reference removed/modified steps
+5. Check existing test projects (from golden services or previous generations) for any feature files that reference removed/modified steps
 6. Update `wiki/index.md` and append to `wiki/log.md`
 
 ### 8. Lint (Periodic)
@@ -188,13 +186,15 @@ Scan `wiki/` for:
 - If the golden services use mocks (WireMock or similar), generate `mocks/` or `mappings/` + `__files/` with stubs matching the new API's endpoints
 - NEVER hallucinate step definitions. If a needed step is not in `wiki/step_dictionary/`, flag it as a gap.
 - If the lifecycle or config patterns from `wiki/qa_patterns/` don't apply to this project, flag the gap
+- Validate all generated files against the rules above before writing
 
-## Validation Before Presenting to User
+## Validation Before Generating
 
-Before showing generated output to the user, verify:
+Before writing files, verify:
 1. Every Gherkin step in the feature file exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix (e.g., `sg:`)
 2. Host placeholder is consistent across all generated files
 3. Payload file references match actual files in the generated structure
 4. All generated config files follow the patterns in `wiki/qa_patterns/`
 5. The scenario count provides reasonable coverage (happy path + all error codes)
 6. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
+7. Output location: `<service-dir>/<api-name>-test/`

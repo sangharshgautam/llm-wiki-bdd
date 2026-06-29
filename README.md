@@ -80,33 +80,31 @@ Generate tests for the new API spec from SOURCES.md.
 The LLM will:
 - Read the OpenAPI spec
 - Consult the wiki (step dictionary + QA patterns)
-- Draft a complete test suite (feature file, config, payloads)
-- Present it for your review
-- Write to `generated/` only after your approval
+- Draft and write a complete test suite to `<service-dir>/<api-name>-test/`
 
-## Project Structure
+ Project Structure
 
 ```
 llm-wiki-bdd/
 ├── AGENTS.md                    # Schema — tells the LLM how to maintain the wiki
+├── opencode.json                # Permission config — pre-authorizes wiki/ and test output dirs
 ├── SOURCES.md                   # External path references to your projects (optional)
 │
 ├── raw_sources/                 # Immutable source files (or use SOURCES.md instead)
-│   ├── step_definitions/        # Your Java step definition files
-│   ├── golden_services/<project>/  # Existing QA feature files + test config
+│   ├── step_definitions/        # Your step definition source files
+│   ├── golden_services/<project>/  # Existing service projects (openapi.yaml + *-test/)
 │   └── new_specs/               # New OpenAPI specs to process
 │
-├── wiki/                        # LLM-maintained knowledge base (auto-generated)
-│   ├── step_dictionary/         # Catalog of available Cucumber steps
-│   ├── qa_patterns/             # Your team's testing conventions and style
-│   ├── apis/                    # Documented APIs
-│   ├── index.md                 # Page catalog
-│   └── log.md                   # Append-only operation log
-│
-└── generated/                   # Generated test output (written after your approval)
-    └── <api-name>-service-test/
-        └── (structure follows wiki/qa_patterns/project_structure.md)
+└── wiki/                        # LLM-maintained knowledge base (auto-generated)
+    ├── step_dictionary/         # Catalog of known step definitions
+    ├── qa_patterns/             # Your team's testing conventions and style
+    ├── apis/                    # Documented APIs
+    ├── index.md                 # Page catalog
+    └── log.md                   # Append-only operation log
 ```
+
+Generated test projects are created alongside the spec as `<service-dir>/<api-name>-test/`,
+mirroring the golden service layout.
 
 ## Workflows
 
@@ -131,16 +129,15 @@ approve before anything is written.
 
 ### Clean and regenerate all
 
-Wipe `wiki/` and `generated/`, then re-ingest everything from `SOURCES.md` and regenerate
-tests from scratch.
+Wipe `wiki/` and any previously generated test directories, then re-ingest everything from
+`SOURCES.md` and regenerate tests from scratch.
 
 This workflow is pre-authorized — `opencode.json` grants automatic permission for
-write operations inside `wiki/` and `generated/`. Just tell your LLM:
+write operations inside `wiki/`. Just tell your LLM:
 
 ```
-Follow AGENTS.md. Clean wiki/ and generated/ completely, then ingest
-everything from SOURCES.md and generate tests for each new_specs entry.
-Present the output for approval before finalizing.
+Follow AGENTS.md. Clean wiki/ completely, then ingest everything from SOURCES.md
+and generate tests for each new_specs entry.
 ```
 
 ### Lint (periodic)
@@ -241,7 +238,7 @@ or the paths in SOURCES.md. Flag any discrepancies.
 - All generated steps use the `sg:` prefix
 - Host placeholder convention: `<api-name>-api` (e.g., `coffee-api`, `fleetroute-api`)
 - The LLM never modifies `raw_sources/`
-- The LLM never writes to `generated/` without your approval
+- The LLM generates test projects directly without requiring approval
 - If a needed step isn't in the wiki, the LLM flags it as a gap (never hallucinates)
 
 ## Acknowledgments

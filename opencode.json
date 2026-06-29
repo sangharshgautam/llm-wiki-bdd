@@ -4,14 +4,6 @@
   "permission": {
     "edit": {
       "wiki/**": "allow",
-      "generated/**": "allow",
-      "*": "ask"
-    },
-    "bash": {
-      "mkdir -p wiki/*": "allow",
-      "mkdir -p generated/*": "allow",
-      "Remove-Item * wiki/*": "allow",
-      "Remove-Item * generated/*": "allow",
       "*": "ask"
     }
   }
