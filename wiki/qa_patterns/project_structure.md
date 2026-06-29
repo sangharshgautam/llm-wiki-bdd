@@ -5,7 +5,7 @@ How Cucumber BDD test projects are organized, based on `coffee-ordering-service-
 ## Directory Layout
 
 ```
-<api-name>-test/
+journey-<api-name>-service-test/
 ├── pom.xml                              # Build file (e.g., Maven)
 ├── scenarios.md                         # Tabular documentation of all scenarios
 └── src/test/

@@ -113,9 +113,9 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
 6. **Consult QA patterns**: Follow conventions from `wiki/qa_patterns/` for scenario structure, payload management, lifecycle setup, and error testing.
 
-7. **Draft the generated project** at `<current-working-dir>/<api-name>-test/` (in the current working directory) with this structure:
+7. **Draft the generated project** at `<current-working-dir>/journey-<api-name>-service-test/` (in the current working directory) with this structure:
     ```
-    <api-name>-test/
+    journey-<api-name>-service-test/
     ├── pom.xml (or equivalent build file)
     ├── src/
     │   └── test/
@@ -169,7 +169,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     - Host placeholder is consistent across all files
     - The scenario count provides reasonable coverage
 
-11. Write all files to `<current-working-dir>/<api-name>-test/`
+11. Write all files to `<current-working-dir>/journey-<api-name>-service-test/`
 
 ### 4. Update Wiki After Approval
 
@@ -225,8 +225,8 @@ Scan `wiki/` for:
 ## Rules
 
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/` (e.g., `sg:`)
-- Generated project directory name: STRICTLY derive from the frontend OpenAPI spec's `info.x-integration-catalogue.publisher-reference` — convert to lowercase kebab-case and append `-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `fleetroute-service-test`, if it's "coffee ordering api" → `coffee-ordering-service-test`
-- **Overwrite existing files**: If the target directory `<current-working-dir>/<api-name>-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
+- Generated project directory name: STRICTLY `journey-<lowercase-kebab-of-publisher-reference>-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `journey-fleetroute-service-test`, if it's "coffee ordering api" → `journey-coffee-ordering-service-test`
+- **Overwrite existing files**: If the target directory `<current-working-dir>/journey-<api-name>-service-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
 - Host placeholder convention: derive from the API name (e.g., `<api-name>-api`)
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
   - `project_structure.md` — directory layout, config files, build tool
@@ -256,4 +256,4 @@ Before writing files, verify:
 6. For each scenario tag (H/N/B), the corresponding `requestPayload/<TAG>.json`, `responsePayload/<TAG>.json`, and `mocks/<TAG>.json` (where applicable) all exist and are referenced correctly in feature files
 7. `scenarios.md` is present at the project root with all scenarios documented in tabular form
 8. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
-9. Output location: `<current-working-dir>/<api-name>-test/`
+9. Output location: `<current-working-dir>/journey-<api-name>-service-test/`

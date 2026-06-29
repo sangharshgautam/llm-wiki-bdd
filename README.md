@@ -84,7 +84,7 @@ Generate tests for the new API spec from SOURCES.md.
 The LLM will:
 - Read the OpenAPI spec
 - Consult the wiki (step dictionary + QA patterns)
-- Draft and write a complete test suite to `<current-working-dir>/<api-name>-test/`
+- Draft and write a complete test suite to `<current-working-dir>/journey-<api-name>-service-test/`
 
  Project Structure
 
@@ -108,7 +108,7 @@ llm-wiki-bdd/
     └── log.md                   # Append-only operation log
 ```
 
-Generated test projects are created in the current working directory as `<current-working-dir>/<api-name>-test/`,
+Generated test projects are created in the current working directory as `<current-working-dir>/journey-<api-name>-service-test/`,
 mirroring the golden service layout.
 
 ## Workflows
