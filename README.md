@@ -135,6 +135,19 @@ For a new OpenAPI spec, the LLM consults the wiki to match endpoints to availabl
 applies your team's conventions, and generates a complete test project. You review and
 approve before anything is written.
 
+### Clean and regenerate all
+
+Wipe `wiki/` and `generated/`, then re-ingest everything from `SOURCES.md` and regenerate
+tests from scratch:
+
+```
+Clean wiki/ and generated/ directories completely. Then follow AGENTS.md:
+1. Read SOURCES.md and ingest all step definitions into wiki/step_dictionary/
+2. Read SOURCES.md and ingest all golden features into wiki/qa_patterns/
+3. Read SOURCES.md and generate tests for each new_specs entry into generated/
+   Present the output for approval before writing.
+```
+
 ### Lint (periodic)
 
 Ask the LLM to health-check the wiki for orphan pages, stale claims, missing
