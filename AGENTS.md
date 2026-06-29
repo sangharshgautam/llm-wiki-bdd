@@ -6,12 +6,12 @@ golden feature files, OpenAPI specs) and generated test output.
 ## Directory Structure
 
 - `raw_sources/` — Immutable source documents. NEVER modify.
-  - `step_definitions/` — Java step definition files (or symlinks)
-  - `golden_features/<project>/` — Example feature files + config from real QA projects
-  - `new_specs/` — New OpenAPI specs waiting to be processed
+  - `step_definitions/` — Step definition source files
+  - `golden_features/<project>/` — Example BDD projects with feature files, config, and lifecycle setup
+  - `new_specs/` — New API specs (OpenAPI, etc.) waiting to be processed
 - `wiki/` — LLM-maintained knowledge base. Create and update freely.
-  - `step_dictionary/` — Compiled catalog of available Cucumber steps
-  - `qa_patterns/` — Extracted QA team testing conventions and style
+  - `step_dictionary/` — Compiled catalog of known step definitions
+  - `qa_patterns/` — Extracted testing conventions and style
   - `apis/` — Documented APIs that have been ingested
   - `index.md` — Catalog of all wiki pages
   - `log.md` — Append-only chronological record of operations
@@ -30,17 +30,17 @@ Example `SOURCES.md`:
 # External Source References
 
 step_definitions:
-  - path: C:/Users/me/projects/openapi-bdd
+  - path: /path/to/step-definition-library
     description: Shared step definition library
 
 golden_features:
-  - path: C:/Users/me/projects/coffee-ordering-api/coffee-ordering-service-test
-    description: Coffee ordering API test project
-  - path: C:/Users/me/projects/fleetroute/fleetroute-service-test
-    description: FleetRoute test project
+  - path: /path/to/golden-project-1
+    description: First reference test project
+  - path: /path/to/golden-project-2
+    description: Second reference test project
 
 new_specs:
-  - path: C:/Users/me/projects/new-api/public/openapi.yaml
+  - path: /path/to/new-api-spec.yaml
     description: New API under test
 ```
 
@@ -74,10 +74,10 @@ Each step page must document:
 Read `raw_sources/golden_features/<project>/` or paths from `SOURCES.md`. Discover
 the project structure automatically — look for:
 - Feature files (`.feature`) — scenario structure, step sequencing, assertion style
-- Test runner configuration (e.g., `CucumberTest.java` or equivalent)
-- Lifecycle setup (e.g., `AppSetup.java`, `BeforeAll` hooks, host/port rewriting)
-- Build/config files (e.g., `pom.xml`, `build.gradle`, `junit-platform.properties`, `cucumber.yml`)
-- Payload directories and naming conventions (`requestPayload/`, `responsePayload/`)
+- Test runner configuration
+- Lifecycle setup (app startup/shutdown, host/port rewriting)
+- Build/config files
+- Payload directories and naming conventions
 
 Store the discovered file names, directory layout, and build tool in the wiki.
 
@@ -95,8 +95,7 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
 1. Read the OpenAPI spec (parse YAML for endpoints, operations, schemas, responses)
 2. Consult `wiki/step_dictionary/` to map each endpoint+HTTP method to available steps
 3. Consult `wiki/qa_patterns/` to match the team's testing conventions
-4. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`:
-
+4. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`
 5. PRESENT the full output to the user for review
 6. Only write to `generated/` after user approval
 
@@ -106,7 +105,7 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
 - **5xx error** if documented in the spec
 - **Response time** assertion
 - **Content type** assertion
-- **Schema validation** if applicable (use `the response should have field` for individual fields)
+- **Schema validation** if applicable — use assertion steps from `wiki/step_dictionary/`
 
 ### 4. Update Wiki After Approval
 
