@@ -80,7 +80,10 @@ For each found test subdirectory, discover the project structure automatically �
 - Test runner configuration
 - Lifecycle setup (app startup/shutdown, host/port rewriting)
 - Build/config files
-- Payload directories and naming conventions
+- `requestPayload/` — request body JSON files referenced in feature files
+- `responsePayload/` — expected response JSON files for file-based assertions
+- `mocks/` or `mappings/` + `__files/` — WireMock stub mappings and response files
+- Any other supporting file directories
 
 Store the discovered file names, directory layout, and build tool in the wiki.
 
@@ -101,7 +104,7 @@ When the user adds a spec to `raw_sources/new_specs/` or `SOURCES.md` and asks t
 4. If no existing step covers a required action (e.g., setting a specific header, asserting a nested field), flag it as a **gap** — do not invent a new step expression
 5. Read the OpenAPI specs from each golden service's `public/openapi.yaml` and cross-reference how their endpoints map to test scenarios in corresponding `*-test/` feature files — use these as examples for mapping the new spec
 6. Consult `wiki/qa_patterns/` to match the team's testing conventions
-7. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`
+7. Draft the generated project following the structure discovered in `wiki/qa_patterns/project_structure.md` and `wiki/qa_patterns/lifecycle_setup.md`. Include the same supporting file directories as the golden services (e.g., `requestPayload/`, `responsePayload/`, `mocks/`, `__files/`) with payload and mock JSON files matching the new API's request/response schemas
 8. Before presenting, verify **every single Gherkin step line** against the compiled step list. If any step doesn't match exactly, remove it and either replace with an existing step or flag as a gap
 9. PRESENT the full output to the user for review, including a list of any gaps found
 10. Only write to `generated/` after user approval
@@ -174,8 +177,9 @@ Scan `wiki/` for:
   - `project_structure.md` — directory layout, config files, build tool
   - `lifecycle_setup.md` — how the app under test is started/stopped, host/port rewriting
   - `payload_management.md` — inline JSON vs file-based payloads
-- For each POST/PUT endpoint with a request body schema, generate a request payload JSON file
-- For each non-trivial response schema, generate a response payload JSON file for file-based assertions
+- For each POST/PUT endpoint with a request body schema, generate a request payload JSON file in `requestPayload/`
+- For each non-trivial response schema, generate a response payload JSON file in `responsePayload/` for file-based assertions
+- If the golden services use mocks (WireMock or similar), generate `mocks/` or `mappings/` + `__files/` with stubs matching the new API's endpoints
 - NEVER hallucinate step definitions. If a needed step is not in `wiki/step_dictionary/`, flag it as a gap.
 - If the lifecycle or config patterns from `wiki/qa_patterns/` don't apply to this project, flag the gap
 
