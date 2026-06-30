@@ -34,3 +34,10 @@
 - Updated `wiki/qa_patterns/scenario_patterns.md` — added Scenario Identification Header section, added header step to all Gherkin examples, updated common step patterns table
 - Updated `wiki/qa_patterns/payload_management.md` — added header matching requirement for mock stubs
 - Mock stubs now must include `mdg_test_scenario` header matching to ensure the correct stub responds for each scenario
+
+## [2026-06-30] re-ingest | coffee-ordering-api (updated workflow)
+- Re-ingested following updated AGENTS.md (no longer considers CucumberTest.java, AppSetup.java, pom.xml)
+- Updated `wiki/qa_patterns/project_structure.md` — removed golden source attribution
+- Updated `wiki/qa_patterns/lifecycle_setup.md` — stripped extracted patterns (lifecycle is now generated from scratch)
+- Generated `wiki/ingestion-report.md` — first ingestion report
+- Coverage: 1 feature file, 10 scenarios, 2 requestPayload, 2 responsePayload, 0 mocks, 12 unique step expressions

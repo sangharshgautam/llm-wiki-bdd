@@ -18,6 +18,7 @@ All paths are relative to the **current working directory** (where the user invo
   - `apis/` — Documented APIs that have been ingested
   - `index.md` — Catalog of all wiki pages
   - `log.md` — Append-only chronological record of operations
+  - `ingestion-report.md` — Latest ingestion summary (overwritten each ingest)
 - `SOURCES.md` — Optional file listing external paths to reference projects without copying. See below.
 
 ## Workflows
@@ -69,6 +70,11 @@ Each step page must document:
 - The method/function signature
 - What the step does in plain language
 
+After all step definition files are processed, generate `wiki/ingestion-report.md` (overwrite existing) documenting:
+- Date and workflow name
+- Each source path processed and number of files discovered
+- Total step expressions found, grouped by category
+
 ### 2. Ingest Golden Features
 
 Read ALL entries from the `golden_services` section of `SOURCES.md` (or all project directories under `raw_sources/golden_services/`). **Do not stop after processing the first entry — iterate over every entry.** Each entry's path points to a service project root directory containing:
@@ -77,22 +83,26 @@ Read ALL entries from the `golden_services` section of `SOURCES.md` (or all proj
 
 For each golden service entry, list its **immediate child directories** and filter those whose name ends with `-test`. These are the test subdirectories (e.g., `coffee-ordering-service-test/`). Do NOT go up to parent directories, and do NOT treat the project root itself as a test directory. For each found `*-test/` subdirectory, discover the project structure automatically — look for:
 - Feature files (`.feature`) — scenario structure, step sequencing, assertion style
-- Test runner configuration
-- Lifecycle setup (app startup/shutdown, host/port rewriting)
-- Build/config files
 - `requestPayload/` — request body JSON files referenced in feature files
 - `responsePayload/` — expected response JSON files for file-based assertions
 - `mocks/` or `mappings/` + `__files/` — WireMock stub mappings and response files
 - Any other supporting file directories
 
-Store the discovered file names, directory layout, and build tool in the wiki.
+Store the discovered file names, directory layout in the wiki.
 
 Update `wiki/qa_patterns/`:
 - `project_structure.md` — how test projects are organized
 - `scenario_patterns.md` — common scenario structures and flows
 - `error_testing.md` — how 4xx/5xx error scenarios are written
 - `payload_management.md` — inline JSON vs file reference conventions
-- `lifecycle_setup.md` — app startup/shutdown, host/port rewriting patterns
+
+After all golden services are processed, generate `wiki/ingestion-report.md` (overwrite existing) documenting:
+- Date and workflow name
+- Each golden service path processed
+- For each `*-test/` subdirectory: feature file count, scenario count, requestPayload file count, responsePayload file count, mock file count
+- All unique step expressions identified from feature files
+- Payload conventions observed (inline JSON vs file-based)
+- Any differences from existing patterns, if multiple golden services
 
 ### 3. Generate Tests
 
@@ -202,6 +212,8 @@ files into `raw_sources/golden_services/`) and asks to ingest:
    4. Create `wiki/apis/<new-api>.md` if applicable
    5. Update `wiki/index.md` and append to `wiki/log.md`
 
+After all new paths are processed, regenerate `wiki/ingestion-report.md` reflecting the newly added sources.
+
 ### 7. Re-Ingest Updated Step Definitions
 
 When step definitions change (user modifies source files or updates the path):
@@ -215,6 +227,7 @@ When step definitions change (user modifies source files or updates the path):
 4. Flag breaking changes (expression syntax changed, method signature changed)
 5. Check existing test projects (from golden services or previous generations) for any feature files that reference removed/modified steps
 6. Update `wiki/index.md` and append to `wiki/log.md`
+7. Regenerate `wiki/ingestion-report.md` reflecting the updated step definitions
 
 ### 8. Lint (Periodic)
 

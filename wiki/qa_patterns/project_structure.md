@@ -1,6 +1,6 @@
 # Project Structure
 
-How Cucumber BDD test projects are organized, based on `coffee-ordering-service-test` and generalized for frontend-backend architecture.
+How Cucumber BDD test projects are organized. This is the target structure that generated projects follow.
 
 ## Directory Layout
 

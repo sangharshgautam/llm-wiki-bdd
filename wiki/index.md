@@ -29,6 +29,12 @@
 | [coffee-ordering.md](apis/coffee-ordering.md) | Coffee Ordering API — ingested example |
 | [fleetroute.md](apis/fleetroute.md) | FleetRoute AI Optimization API — generated test suite |
 
+## reports/
+
+| Page | Description |
+|------|-------------|
+| [ingestion-report.md](ingestion-report.md) | Latest ingestion summary |
+
 ## Sources Ingested
 
 | Source | Type | Date |
