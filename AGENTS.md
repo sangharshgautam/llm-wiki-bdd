@@ -5,12 +5,14 @@ golden feature files, OpenAPI specs) and generated test output.
 
 ## Directory Structure
 
+All paths are relative to the **current working directory** (where the user invoked the LLM).
+
 - `raw_sources/` — Immutable source documents. NEVER modify.
   - `step_definitions/` — Step definition source files
   - `golden_services/<project>/` — Example BDD projects with feature files, config, and lifecycle setup
   - `frontend_spec/` — New frontend API specs (OpenAPI, etc.) waiting to be processed
   - `backend_spec/` — New backend API specs (OpenAPI, etc.) waiting to be processed
-- `wiki/` — LLM-maintained knowledge base. Create and update freely.
+- `wiki/` — LLM-maintained knowledge base in the current working directory. Create and update freely.
   - `step_dictionary/` — Compiled catalog of known step definitions
   - `qa_patterns/` — Extracted testing conventions and style
   - `apis/` — Documented APIs that have been ingested
@@ -111,9 +113,9 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
 6. **Consult QA patterns**: Follow conventions from `wiki/qa_patterns/` for scenario structure, payload management, lifecycle setup, and error testing.
 
-7. **Draft the generated project** at `<current-working-dir>/journey-<api-name>-service-test/` (in the current working directory) with this structure:
+7. **Draft the generated project** at `<current-working-dir>/journey-<api-name>-service-test/` (in the current working directory, which is where the user invoked the LLM) with this structure:
     ```
-    journey-<api-name>-service-test/
+    journey-<api-name>-service-test/      (goes in the current working directory)
     ├── pom.xml (or equivalent build file)
     ├── src/
     │   └── test/
@@ -180,9 +182,9 @@ After user approves generated tests:
 
 ### 5. Portable Wiki (Move Without Raw Sources)
 
-When the user moves `wiki/` and `AGENTS.md` to a new machine (without raw sources):
+`wiki/` lives in the **current working directory**, alongside `AGENTS.md`. When the user moves both to a new machine (without raw sources):
 
-1. Read the existing `wiki/` pages to understand current knowledge
+1. Read the existing `wiki/` pages (in the new current working directory) to understand current knowledge
 2. Read `SOURCES.md` or `raw_sources/` for any new sources on the new machine
 3. If no new sources exist on the new machine, report that the wiki is
    self-contained and ready to generate tests from existing knowledge alone
@@ -225,8 +227,9 @@ Scan `wiki/` for:
 
 ## Rules
 
+- ALL file paths (`wiki/`, `raw_sources/`, `SOURCES.md`, generated projects) are relative to the **current working directory** (where the user invoked the LLM). When the instructions say `wiki/step_dictionary/`, read it as `<current-working-dir>/wiki/step_dictionary/`.
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/`
-- Generated project directory name: STRICTLY `journey-<lowercase-kebab-of-publisher-reference>-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `journey-fleetroute-service-test`, if it's "coffee ordering api" → `journey-coffee-ordering-service-test`
+- Generated project directory MUST be placed in the **current working directory** (where the user invoked the LLM). Directory name: STRICTLY `journey-<lowercase-kebab-of-publisher-reference>-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `journey-fleetroute-service-test` in the current working directory, if it's "coffee ordering api" → `journey-coffee-ordering-service-test` in the current working directory.
 - **Overwrite existing files**: If the target directory `<current-working-dir>/journey-<api-name>-service-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
   - `project_structure.md` — directory layout, config files, build tool
