@@ -61,7 +61,41 @@ Stored in `mocks/` directory on the classpath.
 
 **Purpose:** Each mock stub is derived from the backend OpenAPI spec's corresponding endpoint and response schema. For H scenarios, the mock returns a valid backend response. For N scenarios, the mock returns the relevant error response.
 
-**Header matching:** Every mock stub MUST include a header matching criterion for `mdg_test_scenario`. The stub only responds when the request's `mdg_test_scenario` header matches the stub's tag value. This ensures the correct stub is triggered for each scenario even when multiple stubs exist for the same endpoint.
+**Mock file format (WireMock stub mapping JSON):**
+
+| Section | Content | Source |
+|---------|---------|--------|
+| `request.method` | HTTP method (GET, POST, etc.) | Backend spec endpoint |
+| `request.urlPath` | Backend endpoint path (e.g., `/api/backend/orders`) | Backend spec path |
+| `request.headers.mdg_test_scenario` | `equalTo: <TAG>` | Scenario tag — ensures correct stub is triggered |
+| `response.status` | HTTP status code (200, 400, 500, etc.) | Backend spec response |
+| `response.jsonBody` | Response body from backend spec's response schema | Backend spec response schema |
+| `response.headers.Content-Type` | `application/json` | Standard |
+
+**Example** `mocks/H001.json`:
+```json
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/backend/orders",
+    "headers": {
+      "mdg_test_scenario": {
+        "equalTo": "H001"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "orderId": "a8b3c4d5-e6f7-8a9b-0c1d-2e3f4a5b6c7d",
+      "status": "confirmed"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
+```
 
 ### Which scenarios need mocks?
 

@@ -153,7 +153,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 8. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
     - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario tag as its value (e.g., `H001`), using the `I have the following headers:` step
-    - **Backend mock** (`mocks/<TAG>.json`) — stub derived from the backend spec's endpoint and response schema. The stub MUST include header matching for `mdg_test_scenario` so it only responds when the header matches. (For H scenarios, a valid 200 stub; for N scenarios, the relevant error stub)
+    - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub mapping derived from the backend spec's endpoint (path, method) and response schema (status, body, headers). Must include `mdg_test_scenario` header matching so the stub only responds when the header matches the tag. Follow the format in `wiki/qa_patterns/payload_management.md`. (For H scenarios, a valid 200 stub; for N scenarios, the relevant error stub)
     - **Request payload** (`requestPayload/<TAG>.json`) — valid/invalid frontend request body matching the operation's request schema
     - **Response payload** (`responsePayload/<TAG>.json`) — expected frontend response body for assertion
     - **All payload/mock files named by scenario tag** — `H001.json`, `N001.json`, `B001.json`, etc.
