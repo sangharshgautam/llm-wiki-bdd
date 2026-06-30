@@ -53,8 +53,7 @@ must recursively search that directory for all files containing step definition 
 
 ### 1. Ingest Step Definitions
 
-Read step definition files (from `raw_sources/step_definitions/` or
-`SOURCES.md`). For each step definition
+Read ALL step definition files (from ALL entries in `raw_sources/step_definitions/` or ALL paths listed in `SOURCES.md`). **Do not stop after the first entry — iterate over every entry.** For each step definition
 marker (e.g., Cucumber annotations like `@Given`, `@When`, `@Then`, `@And`),
 create or update a page in `wiki/step_dictionary/` grouped by category.
 
@@ -70,11 +69,11 @@ Each step page must document:
 
 ### 2. Ingest Golden Features
 
-Read `raw_sources/golden_services/<project>/` or paths from `SOURCES.md`. Each path points to a service project root directory containing:
+Read ALL entries from the `golden_services` section of `SOURCES.md` (or all project directories under `raw_sources/golden_services/`). **Do not stop after processing the first entry — iterate over every entry.** Each entry's path points to a service project root directory containing:
 - `public/openapi.yaml` — the OpenAPI spec for the service
 - `*-test/` — one or more immediate subdirectories with feature files and config
 
-For each given path, list its **immediate child directories** and filter those whose name ends with `-test`. These are the test subdirectories (e.g., `coffee-ordering-service-test/`). Do NOT go up to parent directories, and do NOT treat the project root itself as a test directory. For each found `*-test/` subdirectory, discover the project structure automatically — look for:
+For each golden service entry, list its **immediate child directories** and filter those whose name ends with `-test`. These are the test subdirectories (e.g., `coffee-ordering-service-test/`). Do NOT go up to parent directories, and do NOT treat the project root itself as a test directory. For each found `*-test/` subdirectory, discover the project structure automatically — look for:
 - Feature files (`.feature`) — scenario structure, step sequencing, assertion style
 - Test runner configuration
 - Lifecycle setup (app startup/shutdown, host/port rewriting)
@@ -194,11 +193,12 @@ When the user moves `wiki/` and `AGENTS.md` to a new machine (without raw source
 When the user adds a new golden service project path to `SOURCES.md` (or drops
 files into `raw_sources/golden_services/`) and asks to ingest:
 
-1. Read the path, find `public/openapi.yaml` and scan for `*-test/` subdirectories
-2. Compare patterns against existing `wiki/qa_patterns/`
-3. Update relevant pages with new patterns, noting differences from existing ones
-4. Create `wiki/apis/<new-api>.md` if applicable
-5. Update `wiki/index.md` and append to `wiki/log.md`
+1. Read ALL new paths (whether from `SOURCES.md` entries or `raw_sources/golden_services/` subdirectories). **Do not stop after the first one — process each new path.** For each new path:
+   1. Find `public/openapi.yaml` and scan for `*-test/` subdirectories
+   2. Compare patterns against existing `wiki/qa_patterns/`
+   3. Update relevant pages with new patterns, noting differences from existing ones
+   4. Create `wiki/apis/<new-api>.md` if applicable
+   5. Update `wiki/index.md` and append to `wiki/log.md`
 
 ### 7. Re-Ingest Updated Step Definitions
 
