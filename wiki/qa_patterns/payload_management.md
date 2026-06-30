@@ -72,30 +72,7 @@ Stored in `mocks/` directory on the classpath.
 | `response.jsonBody` | Response body from backend spec's response schema | Backend spec response schema |
 | `response.headers.Content-Type` | `application/json` | Standard |
 
-**Example** `mocks/H001.json`:
-```json
-{
-  "request": {
-    "method": "POST",
-    "urlPath": "/backend/orders",
-    "headers": {
-      "mdg_test_scenario": {
-        "equalTo": "H001"
-      }
-    }
-  },
-  "response": {
-    "status": 200,
-    "jsonBody": {
-      "orderId": "a8b3c4d5-e6f7-8a9b-0c1d-2e3f4a5b6c7d",
-      "status": "confirmed"
-    },
-    "headers": {
-      "Content-Type": "application/json"
-    }
-  }
-}
-```
+
 
 ### Which scenarios need mocks?
 
