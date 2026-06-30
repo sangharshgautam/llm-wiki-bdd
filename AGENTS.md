@@ -63,7 +63,7 @@ assertions, context variables, and helpers — but derive them from the actual
 steps rather than assuming.
 
 Each step page must document:
-- The exact step expression (e.g. `sg: I send a POST request`)
+- The exact step expression (e.g. `I send a POST request`)
 - The method/function signature
 - What the step does in plain language
 
@@ -107,7 +107,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
    - **Negative path** — frontend validation rejects (4xx), backend returns error (4xx/5xx), or transforms fail.
    - **Business scenarios** — valid-by-schema requests that violate business rules (e.g., duplicate ID, out-of-range values, conflicting state).
 
-5. **Map endpoints to steps**: For each scenario, map the required actions (request setup, assertions, mocks, etc.) to steps from the compiled dictionary only. Use the **step expression** (e.g., `sg: I send a POST request`) — do NOT copy example data or placeholder URLs from the dictionary pages. Generate fresh URIs, field names, and payloads from the target spec's schemas. Do NOT write any step that is not in the list. If no existing step covers a required action, flag it as a **gap** — do not invent a new step expression.
+5. **Map endpoints to steps**: For each scenario, map the required actions (request setup, assertions, mocks, etc.) to steps from the compiled dictionary only. Use the **step expression** (e.g., `I send a POST request`) — do NOT copy example data or placeholder URLs from the dictionary pages. Generate fresh URIs, field names, and payloads from the target spec's schemas. Do NOT write any step that is not in the list. If no existing step covers a required action, flag it as a **gap** — do not invent a new step expression.
 
 6. **Consult QA patterns**: Follow conventions from `wiki/qa_patterns/` for scenario structure, payload management, lifecycle setup, and error testing.
 
@@ -225,7 +225,7 @@ Scan `wiki/` for:
 
 ## Rules
 
-- ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/` (e.g., `sg:`)
+- ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/`
 - Generated project directory name: STRICTLY `journey-<lowercase-kebab-of-publisher-reference>-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `journey-fleetroute-service-test`, if it's "coffee ordering api" → `journey-coffee-ordering-service-test`
 - **Overwrite existing files**: If the target directory `<current-working-dir>/journey-<api-name>-service-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
@@ -249,7 +249,7 @@ Scan `wiki/` for:
 ## Validation Before Generating
 
 Before writing files, verify:
-1. Every Gherkin step in the feature file exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix (e.g., `sg:`)
+1. Every Gherkin step in the feature file exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix
 2. Payload file references match actual files in the generated structure
 3. All generated config files follow the patterns in `wiki/qa_patterns/`
 4. The scenario count provides reasonable coverage (happy path + all error codes + business scenarios)
