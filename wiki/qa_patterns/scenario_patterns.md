@@ -20,6 +20,13 @@ Frontend Request
 
 Tests verify this full flow. Backend is mocked using stubs derived from the backend spec.
 
+## Scenario Identification Header
+
+Every scenario request MUST include the `mdg_test_scenario` HTTP header with the scenario tag as its value (e.g., `H001`). This header:
+- Uniquely identifies which scenario is being executed
+- Enables the mock backend to match requests to the correct stub (each mock stub expects `mdg_test_scenario` to match its tag)
+- Is set using the `I have the following headers:` step in every scenario
+
 ## Scenario Types and Tagging
 
 Scenarios are split across three feature files by type, with sequential tags:
@@ -36,6 +43,8 @@ Scenarios are split across three feature files by type, with sequential tags:
 @H001
 Scenario: Place a valid coffee order
   Given sg: I have a REST API endpoint at "http://<host>/api/orders"
+  And sg: I have the following headers:
+    | mdg_test_scenario | H001 |
   And sg: I have the following request body:
     """
     {"coffeeType":"Vanilla Latte","size":"medium","quantity":2}
@@ -63,6 +72,8 @@ Errors can originate from two layers:
 @N001
 Scenario: Reject order with missing required field
   Given sg: I have a REST API endpoint at "http://<host>/api/orders"
+  And sg: I have the following headers:
+    | mdg_test_scenario | N001 |
   And sg: I have the following request body:
     """
     {"size":"medium","quantity":1}
@@ -77,6 +88,8 @@ Scenario: Reject order with missing required field
 @N002
 Scenario: Backend returns server error
   Given sg: I have a REST API endpoint at "http://<host>/api/orders"
+  And sg: I have the following headers:
+    | mdg_test_scenario | N002 |
   And sg: I have the following request body:
     """
     {"coffeeType":"Latte","size":"medium","quantity":1}
@@ -98,6 +111,8 @@ Valid-by-schema requests that violate business rules (duplicate, conflict, out-o
 @B001
 Scenario: Duplicate order ID returns conflict
   Given sg: I have a REST API endpoint at "http://<host>/api/orders"
+  And sg: I have the following headers:
+    | mdg_test_scenario | B001 |
   And sg: I have the following request body:
     """
     {"coffeeType":"Latte","size":"large","quantity":1}
@@ -114,6 +129,7 @@ For B scenarios: include request/response payloads. Include backend mock only if
 | Step | Usage |
 |---|---|
 | `sg: I have a REST API endpoint at "{url}"` | Always — sets the endpoint |
+| `sg: I have the following headers:` | Always — sets the `mdg_test_scenario` header (and any other headers) |
 | `sg: I have the following request body:` | Inline JSON for simple/one-off cases |
 | `sg: I have request payload from file "{name}"` | File-based for reusable payloads |
 | `sg: I send a POST request` | The action |

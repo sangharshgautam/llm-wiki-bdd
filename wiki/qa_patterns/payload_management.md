@@ -61,6 +61,8 @@ Stored in `mocks/` directory on the classpath.
 
 **Purpose:** Each mock stub is derived from the backend OpenAPI spec's corresponding endpoint and response schema. For H scenarios, the mock returns a valid backend response. For N scenarios, the mock returns the relevant error response.
 
+**Header matching:** Every mock stub MUST include a header matching criterion for `mdg_test_scenario`. The stub only responds when the request's `mdg_test_scenario` header matches the stub's tag value. This ensures the correct stub is triggered for each scenario even when multiple stubs exist for the same endpoint.
+
 ### Which scenarios need mocks?
 
 | Scenario Type | Mock Required? | Reason |

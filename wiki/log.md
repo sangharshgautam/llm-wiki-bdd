@@ -27,3 +27,10 @@
   - `lifecycle_setup.md` — added mock considerations section
 - Updated `wiki/apis/coffee-ordering.md` — added tag mapping for existing scenarios
 - Updated `wiki/index.md` — re-ingestion recorded
+
+## [2026-06-30] convention | mdg_test_scenario header
+- Added `mdg_test_scenario` header requirement: every scenario request must include this header with its tag value (e.g., `H001`)
+- Updated `AGENTS.md` generate workflow (step 8), validation checks (step 10), and rules section
+- Updated `wiki/qa_patterns/scenario_patterns.md` — added Scenario Identification Header section, added header step to all Gherkin examples, updated common step patterns table
+- Updated `wiki/qa_patterns/payload_management.md` — added header matching requirement for mock stubs
+- Mock stubs now must include `mdg_test_scenario` header matching to ensure the correct stub responds for each scenario
