@@ -60,13 +60,8 @@ if ("multiple-golden-services" -like $TestName) {
             Write-Host "  Backed up SOURCES.md -> SOURCES.md.bak.t1" -ForegroundColor DarkGray
         }
 
-        # Check if there are additional golden services available on another computer
-        # We'll add a second synthetic service pointing to a copy of coffee-ordering
-        $gsDir = Join-Path $ProjectRoot "raw_sources/golden_services"
-        if (Test-Path $gsDir) {
-            $existingServices = Get-ChildItem $gsDir -Directory | ForEach-Object { $_.Name }
-            Write-Host "  Existing golden services: $($existingServices -join ', ')" -ForegroundColor DarkGray
-        }
+        # Check if SOURCES.md lists additional golden services
+        # (golden services are always referenced externally, never in raw_sources/)
 
         Instruction "ACTION REQUIRED:"
         Write-Host ""
@@ -194,9 +189,9 @@ if ("project-name-convention" -like $TestName) {
             $publisherRef = $refMatch.Groups[1].Value
             Write-Host "  Current publisher-reference in frontend spec: $publisherRef" -ForegroundColor DarkGray
         } else {
-            Write-Host "  publisher-reference not found in SOURCES.md (may be in raw spec file)" -ForegroundColor DarkGray
-            # Try reading the spec
-            $specPath = (Get-ChildItem "$ProjectRoot/raw_sources/frontend_spec/*.yaml" -ErrorAction SilentlyContinue) | Select-Object -First 1
+            Write-Host "  publisher-reference not found in SOURCES.md (may be in spec file)" -ForegroundColor DarkGray
+            # Try reading the spec from SOURCES.md path
+            $specPath = $null  # specs are read from SOURCES.md paths, not raw_sources
             if ($specPath) {
                 $specContent = Get-Content $specPath.FullName -Raw
                 $refMatch2 = [regex]::Match($specContent, 'publisher-reference[^:]*:\s*"([^"]+)"')

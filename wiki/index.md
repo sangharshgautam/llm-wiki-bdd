@@ -39,6 +39,6 @@
 
 | Source | Type | Date |
 |---|---|---|
-| `raw_sources/step_definitions/ApiStepDefinitions.java` | Step definitions | 2026-06-28 |
-| `raw_sources/golden_services/coffee-ordering/` | Golden feature project | 2026-06-28 |
-| `raw_sources/frontend_spec/fleetroute-openapi.yaml` | Target spec (generated) | 2026-06-28 |
+| `SOURCES.md` — step_definitions | Step definitions | 2026-06-28 |
+| `SOURCES.md` — golden_services | Golden feature project | 2026-06-28 |
+| `SOURCES.md` — frontend_spec | Target spec (generated) | 2026-06-28 |

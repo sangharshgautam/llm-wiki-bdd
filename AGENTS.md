@@ -1,17 +1,12 @@
 # llm-wiki-bdd
 
-An LLM-powered wiki for generating Cucumber/BDD test suites from OpenAPI specifications. It sits between raw source files (step definitions,
-golden feature files, OpenAPI specs) and generated test output.
+An LLM-powered wiki for generating Cucumber/BDD test suites from OpenAPI specifications. Source files (step definitions,
+golden feature files, OpenAPI specs) are referenced externally via `SOURCES.md`; the wiki sits between them and generated test output.
 
 ## Directory Structure
 
 All paths are relative to the **current working directory** (where the user invoked the LLM).
 
-- `raw_sources/` — Immutable source documents. NEVER modify.
-  - `step_definitions/` — Step definition source files
-  - `golden_services/<project>/` — Example BDD projects with feature files, config, and lifecycle setup
-  - `frontend_spec/` — New frontend API specs (OpenAPI, etc.) waiting to be processed
-  - `backend_spec/` — New backend API specs (OpenAPI, etc.) waiting to be processed
 - `wiki/` — LLM-maintained knowledge base in the current working directory. Create and update freely.
   - `step_dictionary/` — Compiled catalog of known step definitions
   - `qa_patterns/` — Extracted testing conventions and style
@@ -19,14 +14,14 @@ All paths are relative to the **current working directory** (where the user invo
   - `index.md` — Catalog of all wiki pages
   - `log.md` — Append-only chronological record of operations
   - `ingestion-report.md` — Latest ingestion summary (overwritten each ingest)
-- `SOURCES.md` — Optional file listing external paths to reference projects without copying. See below.
+- `SOURCES.md` — Lists external paths to source files (step definitions, golden services, target specs). See below.
 
 ## Workflows
 
-### 0. External Source References (Optional)
+### 0. Source References (`SOURCES.md`)
 
-Instead of copying files into `raw_sources/`, you can list external project paths in `SOURCES.md`.
-The LLM will read directly from those paths.
+All source files (step definitions, golden services, target API specs) are referenced via external paths in `SOURCES.md`.
+The LLM reads directly from those paths. There is no `raw_sources/` directory.
 
 Example `SOURCES.md`:
 ```markdown
@@ -47,8 +42,11 @@ new_specs:
     description: New API under test
 ```
 
-When `SOURCES.md` exists, the LLM reads external paths from it instead of
-requiring files inside `raw_sources/`. You can mix both approaches.
+`SOURCES.md` is the sole mechanism for locating source files. The wiki (`wiki/`) and
+generated test projects exist in the current working directory alongside `SOURCES.md`.
+
+**All paths in `SOURCES.md` are absolute filesystem paths.** Use them as-is — do
+not resolve them relative to the current working directory.
 
 For `step_definitions` paths that point to a directory (not a file), the LLM
 must recursively search that directory for all files containing step definition markers
@@ -56,7 +54,7 @@ must recursively search that directory for all files containing step definition 
 
 ### 1. Ingest Step Definitions
 
-Read ALL step definition files (from ALL entries in `raw_sources/step_definitions/` or ALL paths listed in `SOURCES.md`). **Do not stop after the first entry — iterate over every entry.** For each step definition
+Read ALL step definition files from ALL paths listed in the `step_definitions` section of `SOURCES.md`. **Do not stop after the first entry — iterate over every entry.** For each step definition
 marker (e.g., Cucumber annotations like `@Given`, `@When`, `@Then`, `@And`),
 create or update a page in `wiki/step_dictionary/` grouped by category.
 
@@ -77,7 +75,7 @@ After all step definition files are processed, generate `wiki/ingestion-report.m
 
 ### 2. Ingest Golden Features
 
-Read ALL entries from the `golden_services` section of `SOURCES.md` (or all project directories under `raw_sources/golden_services/`). **Do not stop after processing the first entry — iterate over every entry.** Each entry's path points to a service project root directory containing:
+Read ALL entries from the `golden_services` section of `SOURCES.md`. **Do not stop after processing the first entry — iterate over every entry.** Each entry's path points to a service project root directory containing:
 - `public/openapi.yaml` — the OpenAPI spec for the service
 - `*-test/` — one or more immediate subdirectories with feature files and config
 
@@ -195,17 +193,16 @@ After user approves generated tests:
 `wiki/` lives in the **current working directory**, alongside `AGENTS.md`. When the user moves both to a new machine (without raw sources):
 
 1. Read the existing `wiki/` pages (in the new current working directory) to understand current knowledge
-2. Read `SOURCES.md` or `raw_sources/` for any new sources on the new machine
+2. Read `SOURCES.md` for any external source paths on the new machine
 3. If no new sources exist on the new machine, report that the wiki is
    self-contained and ready to generate tests from existing knowledge alone
 4. Update `wiki/log.md` with the relocation
 
 ### 6. Add New Golden Feature Sources
 
-When the user adds a new golden service project path to `SOURCES.md` (or drops
-files into `raw_sources/golden_services/`) and asks to ingest:
+When the user adds a new golden service project path to `SOURCES.md` and asks to ingest:
 
-1. Read ALL new paths (whether from `SOURCES.md` entries or `raw_sources/golden_services/` subdirectories). **Do not stop after the first one — process each new path.** For each new path:
+1. Read ALL new paths from the `golden_services` section of `SOURCES.md`. **Do not stop after the first one — process each new path.** For each new path:
    1. Find `public/openapi.yaml` and scan for `*-test/` subdirectories
    2. Compare patterns against existing `wiki/qa_patterns/`
    3. Update relevant pages with new patterns, noting differences from existing ones
@@ -218,7 +215,7 @@ After all new paths are processed, regenerate `wiki/ingestion-report.md` reflect
 
 When step definitions change (user modifies source files or updates the path):
 
-1. Re-read all step definition files from `SOURCES.md` or `raw_sources/`
+1. Re-read all step definition files from `SOURCES.md`
 2. Compare against existing `wiki/step_dictionary/` pages
 3. For each change:
    - **New step** — add a new entry to the appropriate category page
@@ -240,7 +237,7 @@ Scan `wiki/` for:
 
 ## Rules
 
-- ALL file paths (`wiki/`, `raw_sources/`, `SOURCES.md`, generated projects) are relative to the **current working directory** (where the user invoked the LLM). When the instructions say `wiki/step_dictionary/`, read it as `<current-working-dir>/wiki/step_dictionary/`.
+- ALL file paths (`wiki/`, `SOURCES.md`, generated projects) are relative to the **current working directory** (where the user invoked the LLM). When the instructions say `wiki/step_dictionary/`, read it as `<current-working-dir>/wiki/step_dictionary/`.
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/`
 - Generated project directory MUST be placed in the **current working directory** (where the user invoked the LLM). Directory name: STRICTLY `journey-<lowercase-kebab-of-publisher-reference>-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `journey-fleetroute-service-test` in the current working directory, if it's "coffee ordering api" → `journey-coffee-ordering-service-test` in the current working directory.
 - **Overwrite existing files**: If the target directory `<current-working-dir>/journey-<api-name>-service-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.

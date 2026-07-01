@@ -127,8 +127,6 @@ backend_spec:
 > searches for all Java files containing Cucumber annotations. You don't need to specify
 > individual files.
 >
-> Alternatively, copy files directly into `raw_sources/` instead of using `SOURCES.md`
-> (see `raw_sources/` structure below).
 
 **3. Run the ingest command**
 
@@ -146,7 +144,7 @@ The LLM will:
 
 **4. Generate tests for a new API**
 
-Add a new spec path to `SOURCES.md` (or drop it in `raw_sources/frontend_spec/` or `raw_sources/backend_spec/`) and tell your LLM:
+Add a new spec path to `SOURCES.md` and tell your LLM:
 
 ```
 Generate tests for the new API spec from SOURCES.md.
@@ -164,12 +162,6 @@ llm-wiki-bdd/
 ├── AGENTS.md                    # Schema — tells the LLM how to maintain the wiki
 ├── opencode.json                # Permission config — pre-authorizes wiki/ and test output dirs
 ├── SOURCES.md                   # External path references to your projects (optional)
-│
-├── raw_sources/                 # Immutable source files (or use SOURCES.md instead)
-│   ├── step_definitions/        # Your step definition source files
-│   ├── golden_services/<project>/  # Existing service projects (openapi.yaml + *-test/)
-   │   ├── frontend_spec/               # New frontend API specs to process
-   │   └── backend_spec/                # New backend API specs to process
 │
 └── wiki/                        # LLM-maintained knowledge base (auto-generated)
     ├── step_dictionary/         # Catalog of known step definitions
@@ -238,7 +230,7 @@ llm-wiki-bdd/
 
 That's it. On the new machine:
 
-1. Create a `SOURCES.md` (or `raw_sources/`) pointing to your new projects on that machine
+1. Create a `SOURCES.md` pointing to your new projects on that machine
 2. Tell the LLM:
    ```
    Follow AGENTS.md. Read wiki/ for existing knowledge. Then ingest SOURCES.md.
@@ -305,14 +297,13 @@ pages, and:
 You can also periodically ask:
 
 ```
-Lint the wiki. Check if step_dictionary/ still matches raw_sources/step_definitions/
-or the paths in SOURCES.md. Flag any discrepancies.
+Lint the wiki. Check if step_dictionary/ still matches the paths in SOURCES.md. Flag any discrepancies.
 ```
 
 ## Rules
 
 - All generated steps use the `sg:` prefix
-- The LLM never modifies `raw_sources/`
+- The LLM only modifies `wiki/` and generated test projects; source files are never modified
 - The LLM generates test projects directly without requiring approval
 - If a needed step isn't in the wiki, the LLM flags it as a gap (never hallucinates)
 
