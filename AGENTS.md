@@ -89,7 +89,7 @@ For each golden service entry, list its **immediate child directories** and filt
 
 Store the discovered file names, directory layout in the wiki.
 
-Update `wiki/qa_patterns/`:
+Create or Update `wiki/qa_patterns/`:
 - `project_structure.md` — how test projects are organized
 - `scenario_patterns.md` — common scenario structures and flows
 - `error_testing.md` — how 4xx/5xx error scenarios are written
@@ -147,7 +147,6 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     │           ├── mocks/
     │           │   ├── H001.json              — H001's backend stub (derived from backend spec)
     │           │   └── …
-    │           └── junit-platform.properties (or equivalent config)
     └── scenarios.md                           — explanation of every scenario in tabular form
     ```
 
