@@ -317,23 +317,15 @@ paths:
 "@
         Set-Content -Path (Join-Path $testDir "unknown-spec.yaml") -Value $unknownSpec
 
-        # Create a temporary SOURCES.md snippet
-        $testSources = @"
-frontend_spec:
-  - path: $testDir/unknown-spec.yaml
-    description: Unknown operation API (for testing missing step detection)
-"@
-        Set-Content -Path (Join-Path $testDir "test-sources.yaml") -Value $testSources
+        # Place the test spec at public/openapi.yaml for the agent to find
+        $publicDir = Join-Path $ProjectRoot "public"
+        if (-not (Test-Path $publicDir)) { New-Item -ItemType Directory -Path $publicDir -Force | Out-Null }
+        Copy-Item (Join-Path $testDir "unknown-spec.yaml") (Join-Path $publicDir "openapi.yaml") -Force
 
         Instruction "ACTION REQUIRED:"
         Write-Host ""
-        Write-Host "  1. Temporarily add the following to SOURCES.md frontend_spec:"
-        Write-Host ""
-        Write-Host "    frontend_spec:" -ForegroundColor Gray
-        Write-Host "      - path: $testDir/unknown-spec.yaml" -ForegroundColor Gray
-        Write-Host "        description: Unknown operation API" -ForegroundColor Gray
-        Write-Host ""
-        Write-Host "  2. Ask the agent to generate tests for the frontend spec"
+        Write-Host "  1. The test spec has been placed at public/openapi.yaml"
+        Write-Host "  2. Ask the agent to generate tests from public/openapi.yaml"
         Write-Host "  3. The agent MUST flag a gap if it needs a step not in the dictionary"
         Write-Host "     (e.g., if it needs a PATCH step and none exists, or similar)"
         Write-Host "  4. After generation, run:"

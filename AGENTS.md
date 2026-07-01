@@ -14,14 +14,13 @@ All paths are relative to the **current working directory** (where the user invo
   - `index.md` — Catalog of all wiki pages
   - `log.md` — Append-only chronological record of operations
   - `ingestion-report.md` — Latest ingestion summary (overwritten each ingest)
-- `SOURCES.md` — Lists external paths to source files (step definitions, golden services, target specs). See below.
+- `SOURCES.md` — Lists external paths to source files (step definitions, golden services). See below.
 
 ## Workflows
 
 ### 0. Source References (`SOURCES.md`)
 
-All source files (step definitions, golden services, target API specs) are referenced via external paths in `SOURCES.md`.
-The LLM reads directly from those paths. There is no `raw_sources/` directory.
+Step definitions and golden services are referenced via external paths in `SOURCES.md`. The frontend API spec (under test) defaults to `<current-working-dir>/public/openapi.yaml` if not specified in `SOURCES.md`. The backend API spec defaults to `<current-working-dir>/assets/backend/openapi.yaml` if not specified in `SOURCES.md`. The LLM reads directly from those paths. There is no `raw_sources/` directory.
 
 Example `SOURCES.md`:
 ```markdown
@@ -29,17 +28,19 @@ Example `SOURCES.md`:
 
 step_definitions:
   - path: /path/to/step-definition-library
-    description: Shared step definition library
+    description: Shared step definition library (LLM discovers @Given/@When/@Then files)
 
 golden_services:
   - path: /path/to/golden-project-1
-    description: First reference test project (scans *-test/ subdirs)
+    description: First reference test project (LLM reads public/openapi.yaml + scans *-test/ subdirs)
   - path: /path/to/golden-project-2
-    description: Second reference test project (scans *-test/ subdirs)
+    description: Second reference test project (LLM reads public/openapi.yaml + scans *-test/ subdirs)
 
-new_specs:
-  - path: /path/to/new-api-spec.yaml
-    description: New API under test
+# frontend_spec: optional — defaults to <current-working-dir>/public/openapi.yaml
+# backend_spec: optional — defaults to <current-working-dir>/assets/backend/openapi.yaml
+# backend_spec:
+#   - path: /path/to/backend-openapi.yaml
+#     description: Backend API spec for mock generation
 ```
 
 `SOURCES.md` is the sole mechanism for locating source files. The wiki (`wiki/`) and
@@ -106,7 +107,9 @@ After all golden services are processed, generate `wiki/ingestion-report.md` (ov
 
 When the user asks to generate tests (after ingest is complete), do NOT re-ingest or re-read source files. Use only what is already in the wiki:
 
-1. **Read both target specs**: Parse the frontend OpenAPI spec and backend OpenAPI spec from their `SOURCES.md` paths (`frontend_spec` and `backend_spec`). These are the new specs under test and must be read fresh. Extract `<api-name>` from the frontend spec's `info.x-integration-catalogue.publisher-reference` — this value determines the project directory name and wiki page name. Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
+0. **Validate spec paths**: Resolve the frontend spec path (from `SOURCES.md` `frontend_spec` or default `<current-working-dir>/public/openapi.yaml`) and the backend spec path (from `SOURCES.md` `backend_spec` or default `<current-working-dir>/assets/backend/openapi.yaml`). Verify both files exist using the filesystem. If either path does not exist, report the missing path and stop — do not proceed with generation.
+
+1. **Read the target specs**: Parse the frontend OpenAPI spec from the resolved frontend spec path. Parse the backend OpenAPI spec from the resolved backend spec path. These must be read fresh. Extract `<api-name>` from the frontend spec's `info.x-integration-catalogue.publisher-reference` — this value determines the project directory name and wiki page name. Understand the service architecture: frontend Camel REST service validates requests against the frontend request schema, transforms via XSLT, validates against the backend request schema, forwards to backend, validates the backend response against the backend response schema, transforms back, validates against the frontend response schema, and returns.
 
 2. **Read golden examples from wiki**: Read `wiki/qa_patterns/` and `wiki/apis/` for scenario patterns, testing conventions, and example API docs. Do NOT re-read golden service source files — the wiki already contains the extracted knowledge.
 

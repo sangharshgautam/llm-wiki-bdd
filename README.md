@@ -24,8 +24,8 @@ The wiki compounds: every project you ingest makes future generations better.
                     ▼                             ▼                             ▼
     ┌───────────────────────────┐   ┌──────────────────────────────┐   ┌──────────────────┐
     │  Step Definition Source   │   │  Golden Service Projects     │   │  New Specs       │
-    │  (Java @Given/@When/@Then)│   │  (feature files, config,     │   │  (frontend_spec, │
-    │  e.g. openapi-bdd         │   │   lifecycle, payloads)       │   │   backend_spec)  │
+    │  (Java @Given/@When/@Then)│   │  (feature files, config,     │   │  (public/        │
+    │  e.g. openapi-bdd         │   │   lifecycle, payloads)       │   │   openapi.yaml)  │
     └───────────┬───────────────┘   └──────────────┬───────────────┘   └────────┬─────────┘
                 │                                  │                            │
                 │ parse annotations                │ extract patterns           │ read fresh on
@@ -114,13 +114,12 @@ golden_services:
   - path: C:/Path/To/Your/SecondTestProject
     description: Second QA project (add as many as you want)
 
-frontend_spec:
-  - path: C:/Path/To/Your/NewApi/openapi.yaml
-    description: New API spec to generate tests for
+# frontend_spec: optional — defaults to public/openapi.yaml in project root
+# backend_spec: optional — defaults to <current-working-dir>/assets/backend/openapi.yaml
+# backend_spec:
+#   - path: C:/Path/To/Your/BackendApi/openapi.yaml
+#     description: Backend API spec for mock generation
 
-backend_spec:
-  - path: C:/Path/To/Your/BackendApi/openapi.yaml
-    description: Backend API spec to generate tests for
 ```
 
 > For `step_definitions`, point to the **project root directory**. The LLM recursively
@@ -205,7 +204,7 @@ write operations inside `wiki/`. Just tell your LLM:
 
 ```
 Follow AGENTS.md. Clean wiki/ completely, then ingest everything from SOURCES.md
-and generate tests for each frontend_spec and backend_spec entry.
+and generate tests for the API spec in public/openapi.yaml.
 ```
 
 ### Lint (periodic)
