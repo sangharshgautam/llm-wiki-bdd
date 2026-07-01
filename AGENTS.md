@@ -124,9 +124,9 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
 6. **Consult QA patterns**: Follow conventions from `wiki/qa_patterns/` for scenario structure, payload management, lifecycle setup, and error testing.
 
-7. **Draft the generated project** at `<current-working-dir>/journey-<api-name>-service-test/` (in the current working directory, which is where the user invoked the LLM) with this structure:
+7. **Draft the generated project** at `<current-working-dir>/<api-name>-service-test/` (in the current working directory, which is where the user invoked the LLM) with this structure:
     ```
-    journey-<api-name>-service-test/      (goes in the current working directory)
+    <api-name>-service-test/      (goes in the current working directory)
     ├── pom.xml (or equivalent build file)
     ├── src/
     │   └── test/
@@ -182,7 +182,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     - Every mock file includes header matching for `mdg_test_scenario`
     - The scenario count provides reasonable coverage
 
-11. Write all files to `<current-working-dir>/journey-<api-name>-service-test/`
+11. Write all files to `<current-working-dir>/<api-name>-service-test/`
 
 ### 4. Update Wiki After Approval
 
@@ -243,7 +243,7 @@ Scan `wiki/` for:
 - ALL file paths (`wiki/`, `SOURCES.md`, generated projects) are relative to the **current working directory** (where the user invoked the LLM). When the instructions say `wiki/step_dictionary/`, read it as `<current-working-dir>/wiki/step_dictionary/`.
 - ALL step references in generated feature files MUST use the step prefix documented in `wiki/step_dictionary/`
 - Generated project directory MUST be placed in the **current working directory** (where the user invoked the LLM). Directory name: STRICTLY `journey-<lowercase-kebab-of-publisher-reference>-service-test`. Never deviate from this convention. E.g., if `publisher-reference` is "FleetRoute" → `journey-fleetroute-service-test` in the current working directory, if it's "coffee ordering api" → `journey-coffee-ordering-service-test` in the current working directory.
-- **Overwrite existing files**: If the target directory `<current-working-dir>/journey-<api-name>-service-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
+- **Overwrite existing files**: If the target directory `<current-working-dir>/<api-name>-service-test/` already exists and contains files, overwrite/replace every file. Do not merge — regenerate all files fresh.
 - The generated project must follow the exact conventions documented in `wiki/qa_patterns/`:
   - `project_structure.md` — directory layout, config files, build tool
   - `lifecycle_setup.md` — how the app under test is started/stopped, host/port rewriting
@@ -273,4 +273,4 @@ Before writing files, verify:
 6. Every scenario includes the `mdg_test_scenario` header matching its tag via the `I have the following headers:` step
 7. `scenarios.md` is present at the project root with all scenarios documented in tabular form
 8. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
-9. Output location: `<current-working-dir>/journey-<api-name>-service-test/`
+9. Output location: `<current-working-dir>/<api-name>-service-test/`
