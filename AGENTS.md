@@ -161,7 +161,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
 9. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
-    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside the spec-declared headers (e.g., `Accept`, `Content-Type`). Header values should use the `example` value from the frontend spec's header parameter definition if available, unless the header uses runtime substitution tokens (e.g., `$date`, `$uuid`)
+    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside **all required** header parameters from the frontend spec's operation (e.g., `Accept`, `Content-Type`). Optional header parameters may be included as needed. Header values should use the `example` value from the frontend spec's header parameter definition if available. If the header uses runtime substitution tokens (e.g., `$date`, `$uuid`), include it with the substitution token as its value instead of the example
     - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec. The mock file is a JSON file with a `request` and `response` object. Use this exact structure:
         - **Method & path**: from the backend spec's operation (e.g., `"POST"`, `"/backend/routes/optimize/v1"`)
         - **Request header matching** — each header is an object, NOT a string:
