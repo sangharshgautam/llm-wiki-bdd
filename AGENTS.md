@@ -159,7 +159,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
 9. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
-    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step
+    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside the spec-declared headers (e.g., `Accept`, `Content-Type`)
     - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec. The mock file is a JSON file with a `request` and `response` object. Use this exact structure:
         - **Method & path**: from the backend spec's operation (e.g., `"POST"`, `"/backend/routes/optimize/v1"`)
         - **Request header matching** — each header is an object, NOT a string:
@@ -291,7 +291,7 @@ Scan `wiki/` for:
   - `mocks/H001.json` — a valid backend stub derived from the backend spec's corresponding endpoint and response schema
 - **For each negative scenario (N-tagged)**: if the error originates from the backend, include a mock; if it's frontend-side validation (4xx), no mock is needed
 - **For each business scenario (B-tagged)**: include request and response payloads; include a backend mock only if the business validation requires backend interaction
-- **`mdg_test_scenario` header**: Every scenario request MUST include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`). The corresponding mock stub MUST expect this header to match — the stub only responds when `mdg_test_scenario` matches the tag value.
+- **`mdg_test_scenario` header**: Every scenario request MUST include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside the spec-declared headers (e.g., `Accept`, `Content-Type`). The corresponding mock stub MUST expect this header to match — the stub only responds when `mdg_test_scenario` matches the tag value.
 - **Backend mock content**: must be derived from the backend spec's response schema for the relevant operation — a valid response stub for the scenario (e.g., 200 for happy, 400/500 for error)
 - **Every generated project must include `scenarios.md`** at the root, documenting all scenarios in tabular form
 - NEVER hallucinate step definitions. If a needed step is not in `wiki/step_dictionary/`, flag it as a gap.
