@@ -159,13 +159,13 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
 9. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
-    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside the spec-declared headers (e.g., `Accept`, `Content-Type`)
+    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside the spec-declared headers (e.g., `Accept`, `Content-Type`). Header values should use the `example` value from the frontend spec's header parameter definition if available, unless the header uses runtime substitution tokens (e.g., `$date`, `$uuid`)
     - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec. The mock file is a JSON file with a `request` and `response` object. Use this exact structure:
         - **Method & path**: from the backend spec's operation (e.g., `"POST"`, `"/backend/routes/optimize/v1"`)
         - **Request header matching** — each header is an object, NOT a string:
           - `"mdg_test_scenario": { "equalTo": "<TAG>" }` — always included. Use the full object form, not a plain string.
-          - Any header parameters declared in the **frontend spec's** operation (required ones must be included; optional ones may be included). Use the `example` value from the frontend spec's header parameter definition if available, matched with `"equalTo"` or `"contains"` as appropriate.
-          - `"Content-Type": { "contains": "application/json" }` if the frontend spec declares it as a required header parameter
+          - Any header parameters declared in the **backend spec's** operation (required ones must be included; optional ones may be included). Use the `example` value from the backend spec's header parameter definition if available, matched with `"equalTo"` or `"contains"` as appropriate.
+          - `"Content-Type": { "contains": "application/json" }` if the backend spec declares it as a required header parameter
           - Optional header parameters may be omitted from matching
           - **Exclude headers** whose values use runtime substitution tokens (e.g., `$date`, `$uuid`) — they are non-deterministic and cannot be matched statically
         - **Response status**: use the **exact HTTP status code** from the backend spec's `responses` section for the relevant scenario type. Do not hardcode — read it from the spec (e.g., use `201` if the spec says `'201'`, not `200`).
