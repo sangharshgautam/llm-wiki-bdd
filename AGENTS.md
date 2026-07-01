@@ -55,6 +55,8 @@ must recursively search that directory for all files containing step definition 
 
 ### 1. Ingest Step Definitions
 
+**Before processing**: Create `wiki/step_dictionary/` if it does not exist.
+
 Read ALL step definition files from ALL paths listed in the `step_definitions` section of `SOURCES.md`. **Do not stop after the first entry — iterate over every entry.** For each step definition
 marker (e.g., Cucumber annotations like `@Given`, `@When`, `@Then`, `@And`),
 create or update a page in `wiki/step_dictionary/` grouped by category.
@@ -69,7 +71,7 @@ Each step page must document:
 - The method/function signature
 - What the step does in plain language
 
-After all step definition files are processed, generate `wiki/ingestion-report.md` (overwrite existing) documenting:
+After all step definition files are processed, generate `wiki/ingestion-report.md` (create if missing, overwrite if exists) documenting:
 - Date and workflow name
 - Each source path processed and number of files discovered
 - Total step expressions found, grouped by category
@@ -89,13 +91,15 @@ For each golden service entry, list its **immediate child directories** and filt
 
 Store the discovered file names, directory layout in the wiki.
 
-Create or Update `wiki/qa_patterns/`:
+**Before processing**: Create `wiki/qa_patterns/` and `wiki/apis/` if they do not exist.
+
+Create or update `wiki/qa_patterns/`:
 - `project_structure.md` — how test projects are organized
 - `scenario_patterns.md` — common scenario structures and flows
 - `error_testing.md` — how 4xx/5xx error scenarios are written
 - `payload_management.md` — inline JSON vs file reference conventions
 
-After all golden services are processed, generate `wiki/ingestion-report.md` (overwrite existing) documenting:
+After all golden services are processed, generate `wiki/ingestion-report.md` (create if missing, overwrite if exists) documenting:
 - Date and workflow name
 - Each golden service path processed
 - For each `*-test/` subdirectory: feature file count, scenario count, requestPayload file count, responsePayload file count, mock file count
