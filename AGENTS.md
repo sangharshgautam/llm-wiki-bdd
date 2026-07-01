@@ -78,7 +78,7 @@ After all step definition files are processed, generate `wiki/ingestion-report.m
 
 ### 2. Ingest Golden Features
 
-Read ALL entries from the `golden_services` section of `SOURCES.md`. Each entry's path points to absolute path to service project directory containing:
+Read ALL entries from the `golden_services` section of `SOURCES.md`. **Do not stop after the first entry — iterate over every entry.** Each entry's path points to absolute path to service project directory containing:
 - `public/openapi.yaml` — the OpenAPI spec for the service
 - `*-test/` — one immediate subdirectories with feature files and config
 
