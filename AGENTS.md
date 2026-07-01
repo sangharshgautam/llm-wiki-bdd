@@ -76,9 +76,9 @@ After all step definition files are processed, generate `wiki/ingestion-report.m
 
 ### 2. Ingest Golden Features
 
-Read ALL entries from the `golden_services` section of `SOURCES.md`. **Do not stop after processing the first entry — iterate over every entry.** Each entry's path points to a service project root directory containing:
+Read ALL entries from the `golden_services` section of `SOURCES.md`. Each entry's path points to absolute path to service project directory containing:
 - `public/openapi.yaml` — the OpenAPI spec for the service
-- `*-test/` — one or more immediate subdirectories with feature files and config
+- `*-test/` — one immediate subdirectories with feature files and config
 
 For each golden service entry, list its **immediate child directories** and filter those whose name ends with `-test`. These are the test subdirectories (e.g., `coffee-ordering-service-test/`). Do NOT go up to parent directories, and do NOT treat the project root itself as a test directory. For each found `*-test/` subdirectory, discover the project structure automatically — look for:
 - Feature files (`.feature`) — scenario structure, step sequencing, assertion style
