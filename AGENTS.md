@@ -134,9 +134,6 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     ├── pom.xml (or equivalent build file)
     ├── src/
     │   └── test/
-    │       ├── java/<package>/
-    │       │   ├── CucumberTest.java (or equivalent runner)
-    │       │   └── AppSetup.java (or equivalent lifecycle setup)
     │       └── resources/
     │           ├── features/
     │           │   ├── happyPath.feature      — 2xx scenarios, tagged @H001, @H002, …
@@ -155,7 +152,12 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     └── scenarios.md                           — explanation of every scenario in tabular form
     ```
 
-8. **Clean stale files**: Before generating per-scenario files, delete all existing files in `features/`, `mocks/`, `requestPayload/`, and `responsePayload/` directories under the generated project. This prevents leftover files from a previous generation from persisting.
+8. **Clean stale files**: Before generating per-scenario files, delete all existing files inside the following subdirectories of the generated project (do NOT delete the directories themselves and do NOT touch any other files or directories):
+   - `src/test/resources/features/`
+   - `src/test/resources/mocks/`
+   - `src/test/resources/requestPayload/`
+   - `src/test/resources/responsePayload/`
+   This prevents leftover files from a previous generation from persisting.
 
 9. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
