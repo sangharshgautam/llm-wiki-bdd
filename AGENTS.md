@@ -159,7 +159,15 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 9. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
     - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario tag as its value (e.g., `H001`), using the `I have the following headers:` step
-    - **Backend mock** (`mocks/<TAG>.json`) — stub derived from the backend spec's endpoint (path, method) and response schema (status, body). Must include `mdg_test_scenario` header matching so the stub only responds when the header matches the tag. (For H scenarios, a valid 200 stub; for N scenarios, the relevant error stub)
+    - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec:
+        - **Method & path**: from the backend spec's operation (e.g., `POST /backend/routes/optimize/v1`)
+        - **Request header matching**:
+          - `mdg_test_scenario` with `{ "equalTo": "<TAG>" }` — always included
+          - Any **required** header parameters declared in the backend spec's operation, matched with `"equalTo"` or `"contains"` as appropriate
+          - Optional header parameters may be omitted from matching
+        - **Response status**: use the **exact HTTP status code** from the backend spec's `responses` section for the relevant scenario type. Do not hardcode — read it from the spec (e.g., use `201` if the spec says `'201'`, not `200`).
+        - **Response headers**: include `Content-Type: application/json` plus any response headers declared in the backend spec for that status code (with realistic static values)
+        - **Response body**: generate valid JSON matching the backend spec's response schema for that status code
     - **Request payload** (`requestPayload/<TAG>.json`) — valid/invalid frontend request body matching the operation's request schema
     - **Response payload** (`responsePayload/<TAG>.json`) — expected frontend response body for assertion
     - **All payload/mock files named by scenario tag** — `H001.json`, `N001.json`, `B001.json`, etc.
