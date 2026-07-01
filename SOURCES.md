@@ -17,7 +17,8 @@ golden_services:
 
 # frontend_spec: optional — defaults to <current-working-dir>/public/openapi.yaml
 # backend_spec: optional — defaults to <current-working-dir>/assets/backend/openapi.yaml
-# backend_spec:
-#   # Add backend API spec path here
+backend_spec:
+  - path: C:/Users/sangh/IdeaProjects/sangharshgautam/llm-wiki-bdd/assets/backend/openapi.yaml
+    description: FleetRoute backend API spec
 
 

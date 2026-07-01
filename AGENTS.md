@@ -84,7 +84,7 @@ For each golden service entry, list its **immediate child directories** and filt
 - Feature files (`.feature`) — scenario structure, step sequencing, assertion style
 - `requestPayload/` — request body JSON files referenced in feature files
 - `responsePayload/` — expected response JSON files for file-based assertions
-- `mocks/` or `mappings/` + `__files/` — WireMock stub mappings and response files
+- `mocks/` — WireMock stub mapping files
 - Any other supporting file directories
 
 Store the discovered file names, directory layout in the wiki.
