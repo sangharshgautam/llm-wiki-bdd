@@ -142,6 +142,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     │           │   ├── happyPath.feature      — 2xx scenarios, tagged @H001, @H002, …
     │           │   ├── negativePath.feature    — 4xx/5xx error scenarios, tagged @N001, @N002, …
     │           │   └── businessScenarios.feature — business rule violations, tagged @B001, @B002, …
+    │           │   A scenario may have multiple tags (e.g., @H001 @H002) if it covers multiple cases.
     │           ├── requestPayload/
     │           │   ├── H001.json              — H001's valid frontend request body
     │           │   └── …
@@ -158,14 +159,15 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
 9. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
-    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario tag as its value (e.g., `H001`), using the `I have the following headers:` step
+    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step
     - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec. The mock file is a JSON file with a `request` and `response` object. Use this exact structure:
         - **Method & path**: from the backend spec's operation (e.g., `"POST"`, `"/backend/routes/optimize/v1"`)
         - **Request header matching** — each header is an object, NOT a string:
           - `"mdg_test_scenario": { "equalTo": "<TAG>" }` — always included. Use the full object form, not a plain string.
-          - Any **required** header parameters declared in the backend spec's operation, matched with `"equalTo"` or `"contains"` as appropriate
-          - `"Content-Type": { "contains": "application/json" }` if the backend spec declares it as a required header
+          - Any header parameters declared in the **frontend spec's** operation (required ones must be included; optional ones may be included). Use the `example` value from the frontend spec's header parameter definition if available, matched with `"equalTo"` or `"contains"` as appropriate.
+          - `"Content-Type": { "contains": "application/json" }` if the frontend spec declares it as a required header parameter
           - Optional header parameters may be omitted from matching
+          - **Exclude headers** whose values use runtime substitution tokens (e.g., `$date`, `$uuid`) — they are non-deterministic and cannot be matched statically
         - **Response status**: use the **exact HTTP status code** from the backend spec's `responses` section for the relevant scenario type. Do not hardcode — read it from the spec (e.g., use `201` if the spec says `'201'`, not `200`).
         - **Response headers**: include `"Content-Type": "application/json"` plus any response headers declared in the backend spec for that status code (with realistic static values). Response header values are plain strings, not objects.
         - **Response body**: generate valid JSON matching the backend spec's response schema for that status code
@@ -210,7 +212,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
 11. **Before finalizing**, verify:
     - Every Gherkin step line exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix
-    - Every scenario includes the `mdg_test_scenario` header matching its tag, using the `I have the following headers:` step
+    - Every scenario includes the `mdg_test_scenario` header matching its primary tag, using the `I have the following headers:` step
     - Every payload file referenced in feature files exists in `requestPayload/` or `responsePayload/`
     - Every mock file referenced exists in `mocks/`
     - Every mock file includes header matching for `mdg_test_scenario`
@@ -289,7 +291,7 @@ Scan `wiki/` for:
   - `mocks/H001.json` — a valid backend stub derived from the backend spec's corresponding endpoint and response schema
 - **For each negative scenario (N-tagged)**: if the error originates from the backend, include a mock; if it's frontend-side validation (4xx), no mock is needed
 - **For each business scenario (B-tagged)**: include request and response payloads; include a backend mock only if the business validation requires backend interaction
-- **`mdg_test_scenario` header**: Every scenario request MUST include the `mdg_test_scenario` HTTP header with the scenario tag as its value (e.g., `H001`). The corresponding mock stub MUST expect this header to match — the stub only responds when `mdg_test_scenario` matches the tag value.
+- **`mdg_test_scenario` header**: Every scenario request MUST include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`). The corresponding mock stub MUST expect this header to match — the stub only responds when `mdg_test_scenario` matches the tag value.
 - **Backend mock content**: must be derived from the backend spec's response schema for the relevant operation — a valid response stub for the scenario (e.g., 200 for happy, 400/500 for error)
 - **Every generated project must include `scenarios.md`** at the root, documenting all scenarios in tabular form
 - NEVER hallucinate step definitions. If a needed step is not in `wiki/step_dictionary/`, flag it as a gap.
@@ -304,7 +306,7 @@ Before writing files, verify:
 3. All generated config files follow the patterns in `wiki/qa_patterns/`
 4. The scenario count provides reasonable coverage (happy path + all error codes + business scenarios)
 5. For each scenario tag (H/N/B), the corresponding `requestPayload/<TAG>.json`, `responsePayload/<TAG>.json`, and `mocks/<TAG>.json` (where applicable) all exist and are referenced correctly in feature files
-6. Every scenario includes the `mdg_test_scenario` header matching its tag via the `I have the following headers:` step
+6. Every scenario includes the `mdg_test_scenario` header matching its primary tag via the `I have the following headers:` step
 7. `scenarios.md` is present at the project root with all scenarios documented in tabular form
 8. If any step had to be invented (not in step dictionary), flag it as a gap instead of generating it
 9. Output location: `<current-working-dir>/journey-<api-name>-service-test/`
