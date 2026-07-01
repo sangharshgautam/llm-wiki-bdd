@@ -197,20 +197,67 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     - **Response payload** (`responsePayload/<TAG>.json`) — expected frontend response body for assertion
     - **All payload/mock files named by scenario tag** — `H001.json`, `N001.json`, `B001.json`, etc.
 
-10. **Generate `scenarios.md`** — place at the project root documenting all scenarios in tabular form:
+10. **Generate `scenarios.md`** — place at the project root documenting all scenarios in tabular form, with detailed explanations below each scenario:
     ```markdown
     # Scenarios — <api-name>
 
-    | Tag  | Type     | Description                        | Request Payload           | Mock                        | Expected Response           |
-    |------|----------|------------------------------------|---------------------------|-----------------------------|-----------------------------|
-    | H001 | Happy    | Valid request returns 200 OK       | requestPayload/H001.json  | mocks/H001.json (backend)   | responsePayload/H001.json   |
-    | H002 | Happy    | Valid request with optional fields  | requestPayload/H002.json  | mocks/H002.json (backend)   | responsePayload/H002.json   |
-    | N001 | Negative | Missing required field returns 400  | requestPayload/N001.json  | —                           | —                           |
-    | N002 | Negative | Backend returns 500                 | requestPayload/N002.json  | mocks/N002.json (backend)   | responsePayload/N002.json   |
-    | B001 | Business | Duplicate ID returns 409            | requestPayload/B001.json  | —                           | responsePayload/B001.json   |
-    ```
+    ## Summary
 
-    Include columns: Tag, Type (Happy/Negative/Business), Description, Request Payload (file path), Mock (file path), Expected Response (file path).
+    | Tag  | Type     | Description                        |
+    |------|----------|------------------------------------|
+    | H001 | Happy    | Valid request with required fields |
+    | H002 | Happy    | Valid request with optional fields |
+    | N001 | Negative | Missing required field returns 400 |
+    | N002 | Negative | Backend returns 500                |
+    | B001 | Business | Duplicate ID returns 409           |
+
+    ## Scenario Details
+
+    ### H001 — Valid request returns 200
+
+    **What is being tested**: Frontend accepts a valid request with all required fields, transforms via XSLT, forwards to backend, receives a valid backend response, transforms back, and returns 200 OK to the client.
+
+    **How it is tested**:
+    1. Send a POST request with a valid request body containing only required fields
+    2. Include `Accept: application/json`, `Content-Type: application/json`, and `mdg_test_scenario: H001` headers
+    3. WireMock stub H001 matches on the `mdg_test_scenario` header and returns a valid backend response
+    4. Assert response status 200 and response fields match the expected frontend response
+
+    **Files**: Request — `requestPayload/H001.json`, Mock — `mocks/H001.json`, Expected — `responsePayload/H001.json`
+
+    ### N001 — Missing required field returns 400
+
+    **What is being tested**: Frontend schema validation rejects a request missing a required field, returning 400 without calling the backend.
+
+    **How it is tested**:
+    1. Send a POST request with a body that omits a required field (schema validation fails)
+    2. No WireMock stub needed — the request fails before reaching the backend
+    3. Assert response status 400 and error message indicates the missing field
+
+    **Files**: Request — `requestPayload/N001.json`
+
+    ### N002 — Backend returns 500
+
+    **What is being tested**: Backend returns a server error; frontend propagates the error as a 500 response.
+
+    **How it is tested**:
+    1. Send a valid POST request that reaches the backend
+    2. WireMock stub N002 returns a 500 error response
+    3. Assert response status 500
+
+    **Files**: Request — `requestPayload/N002.json`, Mock — `mocks/N002.json`, Expected — `responsePayload/N002.json`
+
+    ### B001 — Duplicate ID returns 409
+
+    **What is being tested**: A request that passes schema validation but violates a business rule (duplicate ID) is rejected.
+
+    **How it is tested**:
+    1. Send a POST request with duplicate IDs in the payload (valid schema but invalid business logic)
+    2. Without mock — frontend or Camel route detects the business rule violation
+    3. Assert response status 409
+
+    **Files**: Request — `requestPayload/B001.json`
+    ```
 
 11. **Before finalizing**, verify:
     - Every Gherkin step line exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix
