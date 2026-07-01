@@ -151,7 +151,9 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     └── scenarios.md                           — explanation of every scenario in tabular form
     ```
 
-8. **For each scenario, generate the following**:
+8. **Clean stale files**: Before generating per-scenario files, delete all existing files in `features/`, `mocks/`, `requestPayload/`, and `responsePayload/` directories under the generated project. This prevents leftover files from a previous generation from persisting.
+
+9. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
     - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario tag as its value (e.g., `H001`), using the `I have the following headers:` step
     - **Backend mock** (`mocks/<TAG>.json`) — stub derived from the backend spec's endpoint (path, method) and response schema (status, body). Must include `mdg_test_scenario` header matching so the stub only responds when the header matches the tag. (For H scenarios, a valid 200 stub; for N scenarios, the relevant error stub)
@@ -159,7 +161,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     - **Response payload** (`responsePayload/<TAG>.json`) — expected frontend response body for assertion
     - **All payload/mock files named by scenario tag** — `H001.json`, `N001.json`, `B001.json`, etc.
 
-9. **Generate `scenarios.md`** — place at the project root documenting all scenarios in tabular form:
+10. **Generate `scenarios.md`** — place at the project root documenting all scenarios in tabular form:
     ```markdown
     # Scenarios — <api-name>
 
@@ -174,7 +176,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 
     Include columns: Tag, Type (Happy/Negative/Business), Description, Request Payload (file path), Mock (file path), Expected Response (file path).
 
-10. **Before finalizing**, verify:
+11. **Before finalizing**, verify:
     - Every Gherkin step line exists **verbatim** in `wiki/step_dictionary/` — match the exact expression including prefix
     - Every scenario includes the `mdg_test_scenario` header matching its tag, using the `I have the following headers:` step
     - Every payload file referenced in feature files exists in `requestPayload/` or `responsePayload/`
@@ -182,7 +184,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     - Every mock file includes header matching for `mdg_test_scenario`
     - The scenario count provides reasonable coverage
 
-11. Write all files to `<current-working-dir>/journey-<api-name>-service-test/`
+12. Write all files to `<current-working-dir>/journey-<api-name>-service-test/`
 
 ### 4. Update Wiki After Approval
 
