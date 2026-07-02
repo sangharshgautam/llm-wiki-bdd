@@ -82,12 +82,27 @@ Read ALL entries from the `golden_services` section of `SOURCES.md`. **Do not st
 - `public/openapi.yaml` — the OpenAPI spec for the service
 - `*-test/` — one immediate subdirectories with feature files and config
 
-For each golden service entry, list its **immediate child directories** and filter those whose name ends with `-test`. These are the test subdirectories (e.g., `coffee-ordering-service-test/`). Do NOT go up to parent directories, and do NOT treat the project root itself as a test directory. For each found `*-test/` subdirectory, discover the project structure automatically — look for:
-- Feature files (`.feature`) — scenario structure, step sequencing, assertion style
-- `requestPayload/` — request body JSON files referenced in feature files
-- `responsePayload/` — expected response JSON files for file-based assertions
-- `mocks/` — WireMock stub mapping files
-- Any other supporting file directories
+## Test Directory Discovery Rules
+For each golden service entry provided, you must evaluate ONLY its immediate child directories.
+
+1. Target Directory Identification:
+    - Identify folders matching the pattern `*-test/` (e.g., `coffee-ordering-service-test/`).
+    - Strict Constraint: Do NOT traverse upwards to parent directories. Do NOT treat the project root itself as a test directory.
+
+2. Automated Sub-Structure Parsing:
+   For each discovered `*-test/` subdirectory, automatically extract and map the following structural components into the UI layout:
+
+    - Feature Files (`*.feature`): Parse and display the scenario structures, step sequencing, and assertion styles.
+    - Request Payloads (`requestPayload/`): Map out all request body JSON files that are referenced within the feature files.
+    - Response Payloads (`responsePayload/`): Map out all expected response JSON files used for file-based assertions.
+    - Mocks (`mocks/`): Identify and list WireMock stub mapping files handling downstream dependencies.
+    - Supporting Assets: Automatically discover and classify any other adjacent directories containing test configuration or helper scripts.
+
+## UI Presentation for Discovered Structures
+- Component Mapping: Render each `*-test/` directory as a primary tab or parent component in the UI.
+- Payloads & Mocks Inspection: Inside each test component, provide expandable code-block drawers or modals where users can view the raw JSON payloads (`requestPayload/` and `responsePayload/`) side-by-side with the Gherkin steps referencing them.
+- Dependency Mapping: Visualise WireMock files under a "Mocks & Stubs" sub-tab to show what external APIs are simulated for that feature.
+
 
 Store the discovered file names, directory layout in the wiki.
 
@@ -364,6 +379,17 @@ Scan `wiki/` for:
 - NEVER hallucinate step definitions. If a needed step is not in `wiki/step_dictionary/`, flag it as a gap.
 - If the lifecycle or config patterns from `wiki/qa_patterns/` don't apply to this project, flag the gap
 - Validate all generated files against the rules above before writing
+
+## Validation Before Generating
+
+Add strict validation for negative scenario response payloads:
+
+- When the frontend spec defines a JSON response for a negative scenario status code, generation MUST include response payload validation steps.
+- The response payload JSON file MUST conform to the frontend spec schema and include dynamic placeholders (e.g., $uuid) for dynamic fields.
+- The generated feature MUST discover and use the exact step phrase for response payload validation from `wiki/step_dictionary/json_payload_steps.md` or equivalent, matching the intended validation style (e.g., "extend the JSON present in {string} with the following values" or similar).
+- The exact step phrase MUST NOT be hardcoded in generation rules.
+- If no suitable matching step exists in the dictionary, flag a generation gap.
+- Fail generation if negative scenario response has no payload validation step but the frontend spec defines a body.
 
 ## Validation Before Generating
 
