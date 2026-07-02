@@ -124,7 +124,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
    - **Negative path** — frontend validation rejects (4xx), backend returns error (4xx/5xx), or transforms fail.
    - **Business scenarios** — valid-by-schema requests that violate business rules (e.g., duplicate ID, out-of-range values, conflicting state).
 
-5. **Map endpoints to steps**: For each scenario, map the required actions (request setup, assertions, mocks, etc.) to steps from the compiled dictionary only. Use the **step expression** (e.g., `I send a POST request`) — do NOT copy example data or placeholder URLs from the dictionary pages. Generate fresh URIs, field names, and payloads from the target spec's schemas. Do NOT write any step that is not in the list. If no existing step covers a required action, flag it as a **gap** — do not invent a new step expression.
+5. **Map endpoints to steps**: For each scenario, map the required actions (request setup, assertions, mocks, etc.) to steps from the compiled dictionary only. Use the **step expression** (e.g., `I send a POST request`) — do NOT copy example data or placeholder URLs from the dictionary pages. Generate fresh URIs, field names, and payloads from the target spec's schemas. **Do not use any concrete values from `wiki/qa_patterns/` templates** — those are structural examples only. Do NOT write any step that is not in the list. If no existing step covers a required action, flag it as a **gap** — do not invent a new step expression.
 
 6. **Consult QA patterns**: Follow conventions from `wiki/qa_patterns/` for scenario structure, payload management, lifecycle setup, and error testing.
 
@@ -162,7 +162,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
 9. **For each scenario, generate the following**:
     - **Feature file scenario** — Gherkin steps for the test
     - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside **all required** header parameters from the frontend spec's operation (e.g., `Accept`, `Content-Type`). Optional header parameters may be included as needed.
-      - Header values should use the `example` value from the frontend spec's header parameter definition if available
+      - Header values should use the `example` value from the frontend spec's header parameter definition if available. **Never use header example values from golden sources or `wiki/qa_patterns/` pattern templates** — always derive from the target spec.
       - Check the known substitutable headers list in `wiki/qa_patterns/payload_management.md` — any header whose name appears there gets its runtime substitution token as the value (instead of a concrete example)
     - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec. The mock file is a JSON file with a `request` and `response` object. Use this exact structure:
         - **Method & path**: from the backend spec's operation (e.g., `"POST"`, `"/backend/routes/optimize/v1"`)
