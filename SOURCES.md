@@ -16,6 +16,10 @@ golden_services:
   # - path: C:/Path/To/Another/Service
 
 # frontend_spec: optional — defaults to <current-working-dir>/public/openapi.yaml
+frontend_spec:
+  - path: C:/Users/sangh/IdeaProjects/sangharshgautam/my-llm-wiki/test/public/openapi.yaml
+    description: FleetRoute frontend API spec
+
 # backend_spec: optional — defaults to <current-working-dir>/assets/backend/openapi.yaml
 backend_spec:
   - path: C:/Users/sangh/IdeaProjects/sangharshgautam/llm-wiki-bdd/assets/backend/openapi.yaml

@@ -97,7 +97,7 @@ Create or update `wiki/qa_patterns/`:
 - `project_structure.md` — how test projects are organized
 - `scenario_patterns.md` — common scenario structures and flows
 - `error_testing.md` — how 4xx/5xx error scenarios are written
-- `payload_management.md` — inline JSON vs file reference conventions
+- `payload_management.md` — inline JSON vs file reference conventions, and header substitution list (headers using runtime tokens like `$date`, extracted from golden feature files)
 
 After all golden services are processed, generate `wiki/ingestion-report.md` (create if missing, overwrite if exists) documenting:
 - Date and workflow name
@@ -163,7 +163,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
     - **Feature file scenario** — Gherkin steps for the test
     - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside **all required** header parameters from the frontend spec's operation (e.g., `Accept`, `Content-Type`). Optional header parameters may be included as needed.
       - Header values should use the `example` value from the frontend spec's header parameter definition if available
-      - If the header uses runtime substitution tokens (e.g., `$date`, `$uuid`), include it with the substitution token as its value instead of the example
+      - Check the known substitutable headers list in `wiki/qa_patterns/payload_management.md` — any header whose name appears there gets its runtime substitution token as the value (instead of a concrete example)
     - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec. The mock file is a JSON file with a `request` and `response` object. Use this exact structure:
         - **Method & path**: from the backend spec's operation (e.g., `"POST"`, `"/backend/routes/optimize/v1"`)
         - **Request header matching** — each header is an object, NOT a string:
@@ -171,7 +171,7 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
           - Any header parameters declared in the **backend spec's** operation (required ones must be included; optional ones may be included). Use the `example` value from the backend spec's header parameter definition if available, matched with `"equalTo"` or `"contains"` as appropriate.
           - `"Content-Type": { "contains": "application/json" }` if the backend spec declares it as a required header parameter
           - Optional header parameters may be omitted from matching
-          - **Exclude headers** whose values use runtime substitution tokens (e.g., `$date`, `$uuid`) — they are non-deterministic and cannot be matched statically
+          - **Exclude headers** listed in the known substitutable headers from `wiki/qa_patterns/payload_management.md` — they are non-deterministic and cannot be matched statically
         - **Response status**: use the **exact HTTP status code** from the backend spec's `responses` section for the relevant scenario type. Do not hardcode — read it from the spec (e.g., use `201` if the spec says `'201'`, not `200`).
         - **Response headers**: include `"Content-Type": "application/json"` plus any response headers declared in the backend spec for that status code (with realistic static values). Response header values are plain strings, not objects.
         - **Response body**: generate valid JSON matching the backend spec's response schema for that status code

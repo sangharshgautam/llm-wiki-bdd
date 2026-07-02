@@ -29,6 +29,21 @@ paths:
             enum:
               - application/json
             example: application/json
+        - in: header
+          name: date
+          schema:
+            type: string
+            format: date
+            pattern: "^\d{4}-\d{2}-\d{2}$"
+            example: "2026-07-01"
+          required: true
+        - in: header
+          name: x-correlation-id
+          schema:
+            example: "123e4567-e89b-12d3-a456-426614174000"
+            type: string
+            pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          required: true
       requestBody:
         description: Fleet profiles, constraint parameters, and stop locations to optimize.
         required: true
