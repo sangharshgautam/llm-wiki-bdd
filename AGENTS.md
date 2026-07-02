@@ -165,6 +165,10 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
       - Header values should use the `example` value from the frontend spec's header parameter definition if available. **Never use header example values from golden sources or `wiki/qa_patterns/` pattern templates** — always derive from the target spec.
       - Check the known substitutable headers list in `wiki/qa_patterns/payload_management.md` — any header whose name appears there gets its runtime substitution token as the value (instead of a concrete example)
     - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec. The mock file is a JSON file with a `request` and `response` object. Use this exact structure:
+  - If the step `the backend mock scenario {string}` is used, the `{string}` value MUST be the scenario’s primary tag (e.g. `H001`), not an ‘action’ or other example-table column.
+  - A Scenario Outline may have multiple example rows under a single tag, but they must all share the same `mdg_test_scenario` value (the tag) and therefore share the same `mocks/<TAG>.json`. If different backend stubs are required, split into separate scenarios/tags (e.g. `H001`, `H002`, `H003`).
+  - Do NOT name mock files after business actions (e.g. `apply.json`) or any example-table column; use only `<TAG>.json`.  
+
         - **Method & path**: from the backend spec's operation (e.g., `"POST"`, `"/backend/routes/optimize/v1"`)
         - **Request header matching** — each header is an object, NOT a string:
           - `"mdg_test_scenario": { "equalTo": "<TAG>" }` — always included. Use the full object form, not a plain string.
