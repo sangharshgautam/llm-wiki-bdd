@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Cucumber" time="3.155" tests="5" skipped="0" failures="1" errors="0">
+<testcase classname="Happy Path Scenarios" name="Valid vpd06 request processed successfully" time="0.274">
+<system-out><![CDATA[
+Given the following headers:................................................passed
+Given the payload "H001"....................................................passed
+And the backend mock scenario "H001"........................................passed
+When a "POST" request is sent to the journey................................passed
+Then a 201 response should be returned from the journey.....................passed
+And the response should have no body........................................passed
+And the following headers should be returned:...............................passed
+And the date header is returned in http format..............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Happy Path Scenarios" name="Valid vpd06 request with approvalStatus 02" time="0.051">
+<system-out><![CDATA[
+Given the following headers:................................................passed
+Given the payload "H002"....................................................passed
+And the backend mock scenario "H002"........................................passed
+When a "POST" request is sent to the journey................................passed
+Then a 201 response should be returned from the journey.....................passed
+And the response should have no body........................................passed
+And the following headers should be returned:...............................passed
+And the date header is returned in http format..............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Happy Path Scenarios" name="Valid vpd06 request with approvalStatus 03" time="0.057">
+<system-out><![CDATA[
+Given the following headers:................................................passed
+Given the payload "H003"....................................................passed
+And the backend mock scenario "H003"........................................passed
+When a "POST" request is sent to the journey................................passed
+Then a 201 response should be returned from the journey.....................passed
+And the response should have no body........................................passed
+And the following headers should be returned:...............................passed
+And the date header is returned in http format..............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Negative Path Scenarios" name="Invalid payload with empty emr and bad dates" time="0.066">
+<system-out><![CDATA[
+Given the following headers:................................................passed
+Given the payload "N001"....................................................passed
+When a "POST" request is sent to the journey................................passed
+And the response body should extend the JSON present in "N001" with the following values:.passed
+Then a 400 response should be returned from the journey.....................passed
+And the following headers should be returned:...............................passed
+And the date header is returned in http format..............................passed
+]]></system-out>
+</testcase>
+<testcase classname="Negative Path Scenarios" name="Backend Internal Server Error" time="0.069">
+<failure type="java.lang.AssertionError" message="
+Expected: error
+     but none found
+ ; 
+Unexpected: errorDetail
+">
+<![CDATA[java.lang.AssertionError: 
+Expected: error
+     but none found
+ ; 
+Unexpected: errorDetail
+
+	at org.skyscreamer.jsonassert.JSONAssert.assertEquals(JSONAssert.java:417)
+	at org.skyscreamer.jsonassert.JSONAssert.assertEquals(JSONAssert.java:394)
+	at uk.gov.hmrc.eis.tests.cucumber.service.assertions.JsonAssertionService$JSONAssertWrapper.assertEquals(JsonAssertionService.java:126)
+	at uk.gov.hmrc.eis.tests.cucumber.service.assertions.JsonAssertionService.assertJsonStringsWithMode(JsonAssertionService.java:68)
+	at uk.gov.hmrc.eis.tests.cucumber.service.assertions.JsonAssertionService.assertJsonStringsUnorderedEqual(JsonAssertionService.java:33)
+	at uk.gov.hmrc.eis.tests.cucumber.stepDefinitions.JsonStepDefinitions.compareResponseBody(JsonStepDefinitions.java:138)
+	at ✽.the response body should match the JSON present in "N002"(classpath:features/negativePath.feature:35)
+]]>
+</failure>
+<system-out><![CDATA[
+Given the following headers:................................................passed
+Given the payload "N002"....................................................passed
+And the backend mock scenario "N002"........................................passed
+When a "POST" request is sent to the journey................................passed
+Then a 500 response should be returned from the journey.....................passed
+And the response body should match the JSON present in "N002"...............failed
+And the following headers should be returned:...............................skipped
+And the date header is returned in http format..............................skipped
+]]></system-out>
+</testcase>
+</testsuite>

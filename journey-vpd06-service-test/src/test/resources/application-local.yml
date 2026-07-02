@@ -1,0 +1,3 @@
+journey:
+  authorizationTokenPath: local
+  url: http://localhost:8085/

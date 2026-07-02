@@ -1,0 +1,8 @@
+{
+  "errorDetail": {
+    "correlationId": "$uuid",
+    "errorCode": "400",
+    "errorMessage": "Invalid JSON document.",
+    "source": "journey-vpd06-service-camel"
+  }
+}

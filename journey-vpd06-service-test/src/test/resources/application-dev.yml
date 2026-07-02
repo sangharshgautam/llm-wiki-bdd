@@ -1,0 +1,6 @@
+#TODO: Update token path. Hardcoded for template pipeline to be able to resolve an existing token
+journey:
+  authorizationTokenPath: vault:eiscdg:ext/emcs/api/vpd06/token/api_token
+
+secrets-resolver:
+  url: http://localhost:8089 # For running outside gitlab pipeline with port-forwarding

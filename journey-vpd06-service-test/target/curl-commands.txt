@@ -1,0 +1,134 @@
+
+ #-----  begin curl for scenario = Valid vpd06 request processed successfully ----
+curl -k -v -X POST 'https://apism.emcsdev.ext.dev.mt.n.mes.corp.hmrc.gov.uk//excise/decision/approval/status/v1null' \
+-H 'date:Thu, 02 Jul 2026 16:04:29 UTC' \
+-H 'Authorization:$auth' \
+-H 'x-forwarded-host:ETDS' \
+-H 'Accept:application/json' \
+-H 'X-Correlation-ID:e9706555-17a1-4340-9f58-02e79fdc4ff5' \
+-H 'mdg_test_scenario:H001' \
+-H 'x-eis-sender-classification:external' \
+-H 'x-regime:VPD' \
+-H 'Content-Type:application/json' \
+-d '{
+  "identifiers": {
+    "emr": "XSEMR1234323456"
+  },
+  "otherDetails": {
+    "idNumber": "GBWK1234567WK",
+    "approvalStatus": "01",
+    "startDateOfRegistration": "2026-03-14",
+    "endDateOfRegistration": "2026-06-14"
+  }
+}'
+ #-----  end of curl  -----
+
+ #---------------------------------------------
+
+
+ #-----  begin curl for scenario = Valid vpd06 request with approvalStatus 02 ----
+curl -k -v -X POST 'https://apism.emcsdev.ext.dev.mt.n.mes.corp.hmrc.gov.uk//excise/decision/approval/status/v1null' \
+-H 'date:Thu, 02 Jul 2026 16:04:29 UTC' \
+-H 'Authorization:$auth' \
+-H 'x-forwarded-host:ETDS' \
+-H 'Accept:application/json' \
+-H 'X-Correlation-ID:d1c444ad-704b-4def-a734-b19c6a3ce321' \
+-H 'mdg_test_scenario:H002' \
+-H 'x-eis-sender-classification:external' \
+-H 'x-regime:VPD' \
+-H 'Content-Type:application/json' \
+-d '{
+  "identifiers": {
+    "emr": "XSEMR1234323456"
+  },
+  "otherDetails": {
+    "idNumber": "GBWK1234567WK",
+    "approvalStatus": "02",
+    "startDateOfRegistration": "2026-03-14",
+    "endDateOfRegistration": "2026-03-14"
+  }
+}'
+ #-----  end of curl  -----
+
+ #---------------------------------------------
+
+
+ #-----  begin curl for scenario = Valid vpd06 request with approvalStatus 03 ----
+curl -k -v -X POST 'https://apism.emcsdev.ext.dev.mt.n.mes.corp.hmrc.gov.uk//excise/decision/approval/status/v1null' \
+-H 'date:Thu, 02 Jul 2026 16:04:29 UTC' \
+-H 'Authorization:$auth' \
+-H 'x-forwarded-host:ETDS' \
+-H 'Accept:application/json' \
+-H 'X-Correlation-ID:aba1be04-cff3-436b-85da-bc9004fd7e24' \
+-H 'mdg_test_scenario:H003' \
+-H 'x-eis-sender-classification:external' \
+-H 'x-regime:VPD' \
+-H 'Content-Type:application/json' \
+-d '{
+  "identifiers": {
+    "emr": "XSEMR1234323456"
+  },
+  "otherDetails": {
+    "idNumber": "GBWK1234567WK",
+    "approvalStatus": "03",
+    "startDateOfRegistration": "2026-03-14",
+    "endDateOfRegistration": "2026-03-14"
+  }
+}'
+ #-----  end of curl  -----
+
+ #---------------------------------------------
+
+
+ #-----  begin curl for scenario = Invalid payload with empty emr and bad dates ----
+curl -k -v -X POST 'https://apism.emcsdev.ext.dev.mt.n.mes.corp.hmrc.gov.uk//excise/decision/approval/status/v1null' \
+-H 'date:Thu, 02 Jul 2026 16:04:29 UTC' \
+-H 'Authorization:$auth' \
+-H 'x-forwarded-host:ETDS' \
+-H 'Accept:application/json' \
+-H 'X-Correlation-ID:cefb478c-6ab1-405d-be00-078ef8488179' \
+-H 'x-eis-sender-classification:external' \
+-H 'x-regime:VPD' \
+-H 'Content-Type:application/json' \
+-d '{
+  "identifiers": {
+    "emr": ""
+  },
+  "otherDetails": {
+    "idNumber": "",
+    "approvalStatus": "99",
+    "startDateOfRegistration": "invalid-date",
+    "endDateOfRegistration": "invalid-date"
+  }
+}'
+ #-----  end of curl  -----
+
+ #---------------------------------------------
+
+
+ #-----  begin curl for scenario = Backend Internal Server Error ----
+curl -k -v -X POST 'https://apism.emcsdev.ext.dev.mt.n.mes.corp.hmrc.gov.uk//excise/decision/approval/status/v1null' \
+-H 'date:Thu, 02 Jul 2026 16:04:29 UTC' \
+-H 'Authorization:$auth' \
+-H 'x-forwarded-host:ETDS' \
+-H 'Accept:application/json' \
+-H 'X-Correlation-ID:60f84108-a9b2-4ef9-90ce-f0f5e493efe6' \
+-H 'mdg_test_scenario:N002' \
+-H 'x-eis-sender-classification:external' \
+-H 'x-regime:VPD' \
+-H 'Content-Type:application/json' \
+-d '{
+  "identifiers": {
+    "emr": "XSEMR1234323456"
+  },
+  "otherDetails": {
+    "idNumber": "GBWK1234567WK",
+    "approvalStatus": "01",
+    "startDateOfRegistration": "2026-03-14",
+    "endDateOfRegistration": "2026-03-14"
+  }
+}'
+ #-----  end of curl  -----
+
+ #---------------------------------------------
+

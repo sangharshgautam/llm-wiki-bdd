@@ -1,0 +1,66 @@
+<html>
+<head><title>Scenario Results</title></head>
+<body style="background-color:#AFE1AF">
+<h4>Results of Scenario : Valid vpd06 request processed successfully</h4>
+<h5>CorrelationID= <a target="_blank" href=https://osd.ipaas-tools.test.eis.ns2n.corp.hmrc.gov.uk/app/data-explorer/discover#?_a=(discover:(columns:!(correlationID,journey,tracePoint,errorDetail.sourceFaultDetail.detail,propertyList),isDirty:!f,sort:!()),metadata:(indexPattern:e-cma-dev,view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1M,to:now))&_q=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:e-cma-dev,key:correlationID,negate:!f,params:(query:'e9706555-17a1-4340-9f58-02e79fdc4ff5'),type:phrase),query:(match_phrase:(correlationID:'e9706555-17a1-4340-9f58-02e79fdc4ff5')))),query:(language:kuery,query:''))>e9706555-17a1-4340-9f58-02e79fdc4ff5</a>&#45;&#45; Right click and open in new tab to view Kibana logs</h5>
+<h5>Test executed at: Thu, 02 Jul 2026 16:04:29 BST</h5>
+
+<!-- First table to show BDD request to EIS-->
+<br>https://apism.emcsdev.ext.dev.mt.n.mes.corp.hmrc.gov.uk//excise/decision/approval/status/v1null<br>
+<table border="1">
+    <tr><th scope="row" colspan="2">Request to EIS</th></tr>
+    <tr><td>Request Headers</td> <td>Request Body</td> </tr>
+    <tr>
+        <td>date=Thu, 02 Jul 2026 16:04:29 UTC,<br>Authorization=$auth,<br>x-forwarded-host=ETDS,<br>Accept=application/json,<br>X-Correlation-ID=e9706555-17a1-4340-9f58-02e79fdc4ff5,<br>mdg_test_scenario=H001,<br>x-eis-sender-classification=external,<br>x-regime=VPD,<br>Content-Type=application/json</td>
+        <td><textarea  name="" id="req" cols="100" rows="10">{
+  "identifiers": {
+    "emr": "XSEMR1234323456"
+  },
+  "otherDetails": {
+    "idNumber": "GBWK1234567WK",
+    "approvalStatus": "01",
+    "startDateOfRegistration": "2026-03-14",
+    "endDateOfRegistration": "2026-06-14"
+  }
+}</textarea></td>
+    </tr>
+</table>
+<br><br><br>
+
+<details>
+    <summary>Click to show wiremock request/response</summary>
+    <br><br>
+    <!-- Second table to show EIS request to Wiremock and wiremock's response to EIS-->
+
+    <table border="1">
+        <tr>
+            <th scope="row" colspan="2">EIS to Wiremock</th>
+            <th scope="row" colspan="2">Wiremock to EIS</th>
+        </tr>
+        <tr><td>Request Headers </td> <td>Request Body</td> <td>Response Code</td> <td>Response Body</td></tr>
+        <tr>
+            <td><textarea disabled name="" id="mockreqHeaders" cols="50" rows="10"></textarea></td>
+            <td><textarea disabled name="" id="mockreqBody" cols="50" rows="10"></textarea></td>
+            <td></td>
+            <td><textarea disabled name="" id="mockres" cols="50" rows="10"></textarea></td>
+        </tr>
+    </table>
+    <br><i>Note: Wiremock section is not applicable for scenarios like header tests / request(or) response validation / schema validation tests.
+    Values will be empty for such scenarios</i><br>
+</details>
+<br><br><br>
+
+<!-- Fourth table to show EIS response to BDD (frontend) -->
+<table border="1">
+    <tr><th scope="row" colspan="2">Response from EIS</th></tr>
+    <td>Response Code</td> <td>Response Body</td></tr>
+    <tr>
+        <td>201</td>
+        <td><textarea disabled name="" id="res" cols="100" rows="10"></textarea></td>
+    </tr>
+</table>
+
+
+
+</body>
+</html>

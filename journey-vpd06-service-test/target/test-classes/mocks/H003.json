@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/RESTAdapter/generic/excise-approval-status",
+    "headers": {
+      "mdg_test_scenario": { "equalTo": "H003" },
+      "Content-Type": { "contains": "application/json" }
+    }
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

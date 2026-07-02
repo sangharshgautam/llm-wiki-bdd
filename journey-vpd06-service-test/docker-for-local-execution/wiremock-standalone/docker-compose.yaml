@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  wiremock:
+    container_name: wiremock
+    image: wiremock/wiremock:3.3.1
+    ports:
+      - "8080:8080"
+    command:
+      - "--global-response-templating"
+      - "-v"
+    volumes:
+      - ../../src/test/resources/mocks:/home/wiremock/mappings

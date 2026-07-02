@@ -1,0 +1,11 @@
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/services/OasSpecExtractionService.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/CucumberTestRunner.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/models/Request.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/CucumberTestHooks.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/models/BodyPatterns.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/stepDefinitions/JourneyStepDefinitions.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/CucumberTestContext.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/models/Response.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/services/WiremockMappingGeneratorService.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/services/PayloadFileWriterService.java
+/tmp/journey-vpd06-service/journey-vpd06-service-test/src/test/java/uk/gov/gsi/hmrc/bdd/models/Mapping.java

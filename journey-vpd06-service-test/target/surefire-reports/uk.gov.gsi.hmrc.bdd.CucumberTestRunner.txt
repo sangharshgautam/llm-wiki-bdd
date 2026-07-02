@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------------
+Test set: uk.gov.gsi.hmrc.bdd.CucumberTestRunner
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 3.407 s <<< FAILURE! -- in uk.gov.gsi.hmrc.bdd.CucumberTestRunner
+Negative Path Scenarios.Negative Path Scenarios - Backend Internal Server Error -- Time elapsed: 0.091 s <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: error
+     but none found
+ ; 
+Unexpected: errorDetail
+
+	at org.skyscreamer.jsonassert.JSONAssert.assertEquals(JSONAssert.java:417)
+	at org.skyscreamer.jsonassert.JSONAssert.assertEquals(JSONAssert.java:394)
+	at uk.gov.hmrc.eis.tests.cucumber.service.assertions.JsonAssertionService$JSONAssertWrapper.assertEquals(JsonAssertionService.java:126)
+	at uk.gov.hmrc.eis.tests.cucumber.service.assertions.JsonAssertionService.assertJsonStringsWithMode(JsonAssertionService.java:68)
+	at uk.gov.hmrc.eis.tests.cucumber.service.assertions.JsonAssertionService.assertJsonStringsUnorderedEqual(JsonAssertionService.java:33)
+	at uk.gov.hmrc.eis.tests.cucumber.stepDefinitions.JsonStepDefinitions.compareResponseBody(JsonStepDefinitions.java:138)
+	at ✽.the response body should match the JSON present in "N002"(classpath:features/negativePath.feature:35)
+

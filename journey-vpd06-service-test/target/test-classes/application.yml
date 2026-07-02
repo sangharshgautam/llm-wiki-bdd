@@ -1,0 +1,8 @@
+spring:
+  config:
+    import: "optional:classpath:core-properties.yml"
+
+journey:
+  name: vpd06
+  path: /excise/decision/approval/status/v1
+  payloadType: JSON # Use either JSON or XML (both uppercase)
