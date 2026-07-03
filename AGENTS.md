@@ -175,23 +175,29 @@ When the user asks to generate tests (after ingest is complete), do NOT re-inges
    This prevents leftover files from a previous generation from persisting.
 
 9. **For each scenario, generate the following**:
-    - **Feature file scenario** — Gherkin steps for the test
-    - **`mdg_test_scenario` header** — every scenario must include the `mdg_test_scenario` HTTP header with the scenario's primary tag as its value (e.g., for `@H001 @H002`, use `H001`), using the `I have the following headers:` step alongside **all required** header parameters from the frontend spec's operation (e.g., `Accept`, `Content-Type`). Optional header parameters may be included as needed.
-      - Header values should use the `example` value from the frontend spec's header parameter definition if available. **Never use header example values from golden sources or `wiki/qa_patterns/` pattern templates** — always derive from the target spec.
-      - Check the known substitutable headers list in `wiki/qa_patterns/payload_management.md` — any header whose name appears there gets its runtime substitution token as the value (instead of a concrete example).
-- For required header parameters, always include the header using the exact name from the frontend spec and set its value to the spec `example` (unless that header is in the substitutable list). Do not use any default values (e.g. MDTP) or convention values from golden patterns/templates.
-    - **Backend mock** (`mocks/<TAG>.json`) — WireMock stub derived from the backend spec. The mock file is a JSON file with a `request` and `response` object. Use this exact structure:
-  - If the step `the backend mock scenario {string}` is used, the `{string}` value MUST be the scenario’s primary tag (e.g. `H001`), not an ‘action’ or other example-table column.
-  - A Scenario Outline may have multiple example rows under a single tag, but they must all share the same `mdg_test_scenario` value (the tag) and therefore share the same `mocks/<TAG>.json`. If different backend stubs are required, split into separate scenarios/tags (e.g. `H001`, `H002`, `H003`).
-  - Do NOT name mock files after business actions (e.g. `apply.json`) or any example-table column; use only `<TAG>.json`.
-  - Only generate `Scenario Outline` if the scenario steps reference at least one example placeholder (`<...>`).
-  - Generate a plain `Scenario` if no example placeholders are needed (omit the `Examples:` section).
-  - For the success scenario, always use the exact HTTP response status code from the frontend spec’s response section for the relevant operation. Do not hardcode `200` or any other default.
-  - If the response content is empty or not declared, use the exact step expression for no response body assertion as defined in the step dictionary (e.g., "the response should have no body"). The agent must consult the step dictionary and use the exact step phrase found.
-  - If no suitable no-body step expression exists in the step dictionary, flag a generation gap and do not generate an invalid step.
-
-
-
+  - **Feature file scenario**: generate one scenario per response HTTP status code and per response media type declared in the frontend spec.
+    - When multiple media types are declared for the same status code (e.g., application/json and application/xml), generate a separate scenario per media type, each with a unique tag.
+    - Each scenario must include the correct `Accept` header matching the media type.
+    - If multiple request media types are declared, generate scenarios for each combination of request and response media types.
+  - **`mdg_test_scenario` header**: every scenario must include the scenario tag as its value, using the `I have the following headers:` step alongside **all required** header parameters from the frontend spec (e.g., `Accept`, `Content-Type`). Optional header parameters may be included as needed.
+    - Header values should use the `example` value from the frontend spec header parameter if available. Never use values from golden templates.
+    - Headers in the known substitutable list get substituted runtime tokens as values.
+    - For required header parameters, always include them verbatim with spec `example` values (unless substitutable).
+  - **Backend mock** (`mocks/<TAG>.json`): derived from the backend spec response schema.
+    - Use the exact status code and path from the backend spec.
+    - Include header matching for `mdg_test_scenario` and required headers, using `equalTo` or `contains` appropriately.
+    - Match response headers exactly including `Content-Type`.
+    - Generate valid response bodies matching the backend spec's response schema.
+  - **Payload files**:
+    - Request payload: `requestPayload/<TAG>.<ext>` matching the request media type (json or xml).
+    - Response payload: `responsePayload/<TAG>.<ext>` matching the response media type.
+    - Name payload/mock files strictly by scenario tag.
+  - **Response payload validation**:
+    - If the response content type is JSON, select the exact JSON response validation step from the dictionary, preferring extensible + DataTable override style (no hardcoding).
+    - If the response content type is XML, select the exact XML response validation step from the dictionary (no hardcoding).
+    - If the response has no body, select the exact no body assertion step from the dictionary.
+  - **Scenario Outline**: generate only when placeholders exist in the feature steps.
+  - **Use exact header and step expressions from the dictionary**. Flag gaps if missing.
 
         - **Method & path**: from the backend spec's operation (e.g., `"}}"POST"`, `"/backend/routes/optimize/v1"`)
         - **Request header matching** — each header is an object, NOT a string:
